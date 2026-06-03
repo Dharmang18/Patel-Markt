@@ -1,0 +1,180 @@
+{
+  "nav": {
+    "home": "Home",
+    "shop": "Shop",
+    "cart": "Cart",
+    "about": "About"
+  },
+  "hero": {
+    "badge": "Freshly stocked",
+    "title": "Authentic Indian Groceries",
+    "subtitle": "Discover the rich flavours of India – delivered to your door across Germany. Over 500 products from trusted Indian brands.",
+    "cta": "Shop Now",
+    "secondary": "Learn More",
+    "stat1Value": "500+",
+    "stat1Label": "Products",
+    "stat2Value": "2–4 days",
+    "stat2Label": "Delivery time",
+    "stat3Value": "From €50",
+    "stat3Label": "Free shipping"
+  },
+  "categories": {
+    "title": "Categories",
+    "subtitle": "Everything you need for Indian cooking",
+    "spices": "Spices & Masalas",
+    "lentils": "Lentils & Pulses",
+    "rice": "Rice & Grains",
+    "flour": "Flour & Baking",
+    "snacks": "Snacks & Sweets",
+    "beverages": "Beverages",
+    "pickles": "Pickles & Chutneys",
+    "oils": "Oils & Ghee",
+    "ready-to-eat": "Ready to Eat",
+    "namkeen": "Namkeen",
+    "fruits-veggies": "Fruits & Veggies"
+  },
+  "products": {
+    "featured": "Popular Products",
+    "featuredSub": "Our best-selling items",
+    "addToCart": "Add to Cart",
+    "inStock": "In Stock",
+    "outOfStock": "Out of Stock",
+    "price": "Price",
+    "shopAll": "View All Products",
+    "searchPlaceholder": "Search products…",
+    "productsCount": "{count} products",
+    "noResults": "No products found"
+  },
+  "cart": {
+    "title": "Shopping Cart",
+    "empty": "Your cart is empty",
+    "emptyHint": "Browse our shop and add some items.",
+    "continueShopping": "Continue Shopping",
+    "total": "Total",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "shippingFree": "Free over €50",
+    "checkout": "Proceed to Checkout",
+    "remove": "Remove",
+    "quantity": "Quantity",
+    "freeShipping": "Add {amount} more for free shipping!",
+    "orderSummary": "Order Summary",
+    "orderViaWhatsApp": "Order via WhatsApp",
+    "whatsAppNote": "Tap the button to send your order directly to our WhatsApp. We'll confirm and arrange delivery.",
+    "modalTitle": "📦 Place Your Order",
+    "modalSubtitle": "We'll send your order to WhatsApp",
+    "modalFillDetails": "Fill in your details to continue",
+    "labelName": "Your Name",
+    "labelPhone": "Phone Number",
+    "labelAddress": "Delivery Address",
+    "placeholderName": "Your full name",
+    "placeholderPhone": "+49 170 0000000",
+    "placeholderAddress": "Street, Postcode, City",
+    "cancel": "Cancel",
+    "sendViaWhatsApp": "Send via WhatsApp",
+    "totalLabel": "Total",
+    "sending": "Sending…",
+    "orderSuccess": "Order sent!",
+    "orderSuccessHint": "We received your order and will reach out shortly via WhatsApp.",
+    "orderError": "Could not send your order. Please try again."
+  },
+  "checkout": {
+    "title": "Checkout",
+    "contact": "Contact Details",
+    "name": "Full Name",
+    "email": "Email Address",
+    "phone": "Phone Number",
+    "address": "Delivery Address",
+    "street": "Street & House Number",
+    "city": "City",
+    "postcode": "Postcode",
+    "country": "Country",
+    "payment": "Payment Method",
+    "payCard": "Credit / Debit Card",
+    "payPaypal": "PayPal",
+    "paySepa": "Bank Transfer (SEPA)",
+    "sepaInfo": "Please transfer the amount to the bank account below. Your order will be shipped once payment is received.",
+    "placeOrder": "Place Order",
+    "orderSummary": "Order Summary",
+    "processing": "Processing...",
+    "success": "Order placed successfully!",
+    "successMsg": "Thank you for your order. You will receive a confirmation email shortly.",
+    "germany": "Germany"
+  },
+  "about": {
+    "title": "About Patel Markt",
+    "subtitle": "Your home for authentic Indian products in Germany",
+    "story": "Our Story",
+    "storyText": "Patel Markt was founded with a simple mission: to make the rich variety of Indian groceries accessible to the Indian community and all lovers of Indian cuisine in Germany. We source our products directly from trusted Indian manufacturers and suppliers.",
+    "quality": "Quality & Freshness",
+    "qualityText": "All our products are carefully selected and quality-checked. We guarantee fresh goods and authentic products from India.",
+    "delivery": "Fast Delivery",
+    "deliveryText": "We deliver across Germany. Free shipping on orders over €50. Delivery time: 2–4 business days.",
+    "contact": "Contact",
+    "hours": "Opening Hours",
+    "hoursVal": "Mon–Sat: 9:30–20:00",
+    "address": "Address",
+    "phone": "Phone",
+    "email": "Email"
+  },
+  "footer": {
+    "tagline": "Authentic Indian groceries in Germany",
+    "shop": "Shop",
+    "info": "Information",
+    "privacy": "Privacy Policy",
+    "imprint": "Imprint",
+    "terms": "Terms & Conditions",
+    "rights": "All rights reserved."
+  },
+  "promises": {
+    "delivery": {
+      "title": "Fast Delivery",
+      "desc": "Nationwide delivery in 2–4 business days"
+    },
+    "quality": {
+      "title": "Verified Quality",
+      "desc": "All products carefully selected"
+    },
+    "returns": {
+      "title": "Easy Returns",
+      "desc": "14-day return policy"
+    }
+  },
+  "home": {
+    "shopAll": "View All →",
+    "cta": {
+      "title": "Free Shipping from €50",
+      "subtitle": "Fill your cart with authentic Indian products and save on shipping.",
+      "button": "Shop Now"
+    }
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "currency": "€"
+  },
+  "auth": {
+    "login": "Log in",
+    "register": "Register",
+    "logout": "Log out",
+    "account": "My Account",
+    "email": "Email",
+    "password": "Password",
+    "fullName": "Full name",
+    "phone": "Phone",
+    "address": "Delivery address",
+    "haveAccount": "Already have an account?",
+    "noAccount": "No account yet?",
+    "createAccount": "Create account",
+    "signIn": "Sign in",
+    "myOrders": "My Orders",
+    "noOrders": "No orders yet",
+    "profile": "Profile",
+    "saveProfile": "Save profile",
+    "saved": "Saved",
+    "checkEmail": "Please confirm your email address to continue.",
+    "invalidCredentials": "Email or password is incorrect.",
+    "genericError": "Something went wrong. Please try again.",
+    "welcome": "Welcome back"
+  }
+}

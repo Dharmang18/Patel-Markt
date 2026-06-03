@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 82" fill="none">
+  <!-- Transparent / white background -->
+  <rect width="340" height="82" rx="16" fill="white"/>
+
+  <!-- Shopping bag body -->
+  <rect x="18" y="35" width="46" height="35" rx="6" fill="#c0392b"/>
+  <!-- Bag top strip -->
+  <rect x="23" y="32" width="36" height="9" rx="2" fill="#c0392b"/>
+  <!-- Bag handle arc -->
+  <path d="M27 35 C27 19 55 19 55 35" stroke="#c0392b" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+  <!-- Subtle fold line on bag -->
+  <line x1="18" y1="46" x2="64" y2="46" stroke="white" stroke-width="1.5" opacity="0.4"/>
+  <!-- Pm inside bag -->
+  <text x="41" y="62" text-anchor="middle"
+        font-family="Georgia, 'Times New Roman', serif"
+        font-size="16" font-weight="700" fill="white" letter-spacing="-0.5">Pm</text>
+
+  <!-- Divider -->
+  <line x1="80" y1="15" x2="80" y2="67" stroke="#c0392b" stroke-width="1" opacity="0.4"/>
+
+  <!-- PATEL MARKT -->
+  <text x="94" y="44"
+        font-family="'Arial Black', Impact, 'Helvetica Neue', sans-serif"
+        font-size="25" font-weight="900" fill="#c0392b" letter-spacing="1">PATEL MARKT</text>
+
+  <!-- TASTE OF TRADITION -->
+  <text x="95" y="61"
+        font-family="Arial, Helvetica, sans-serif"
+        font-size="10" font-weight="400" fill="#c0392b" letter-spacing="3.5" opacity="0.80">TASTE OF TRADITION</text>
+</svg>

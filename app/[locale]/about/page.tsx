@@ -1,0 +1,98 @@
+import { useTranslations } from 'next-intl';
+import { MapPin, Clock, Phone, Mail, Truck, ShieldCheck, Star } from 'lucide-react';
+
+export default function AboutPage() {
+  const t = useTranslations('about');
+
+  return (
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      {/* Hero */}
+      <div className="text-center mb-16">
+        <h1 className="text-4xl font-extrabold text-gray-900 mb-4">{t('title')}</h1>
+        <p className="text-xl text-gray-500 max-w-2xl mx-auto">{t('subtitle')}</p>
+      </div>
+
+      {/* Story + values */}
+      <div className="grid md:grid-cols-3 gap-8 mb-16">
+        {[
+          {
+            icon: <Star className="w-7 h-7 text-brand" />,
+            title: t('story'),
+            text: t('storyText'),
+          },
+          {
+            icon: <ShieldCheck className="w-7 h-7 text-brand" />,
+            title: t('quality'),
+            text: t('qualityText'),
+          },
+          {
+            icon: <Truck className="w-7 h-7 text-brand" />,
+            title: t('delivery'),
+            text: t('deliveryText'),
+          },
+        ].map((item) => (
+          <div key={item.title} className="card p-6">
+            <div className="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center mb-4">
+              {item.icon}
+            </div>
+            <h3 className="font-bold text-lg text-gray-900 mb-2">{item.title}</h3>
+            <p className="text-gray-500 text-sm leading-relaxed">{item.text}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Contact card */}
+      <div className="rounded-3xl p-8 md:p-12 text-white" style={{ background: 'linear-gradient(135deg, #e31e25, #b71c1c)' }}>
+        <h2 className="text-2xl font-extrabold mb-8">{t('contact')}</h2>
+
+        <div className="grid sm:grid-cols-2 gap-6">
+          <div className="flex items-start gap-4">
+            <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
+              <MapPin className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="font-semibold text-sm text-white/80 mb-1">{t('address')}</p>
+              <p className="font-medium">Große Ulrichstraße 36</p>
+              <p className="font-medium">06108 Halle (Saale), Deutschland</p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-4">
+            <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
+              <Clock className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="font-semibold text-sm text-white/80 mb-1">{t('hours')}</p>
+              <p className="font-medium">{t('hoursVal')}</p>
+              <p className="text-white/70 text-sm">Sonntags geschlossen</p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-4">
+            <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
+              <Phone className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="font-semibold text-sm text-white/80 mb-1">{t('phone')}</p>
+              <a href="tel:+491742513750" className="font-medium hover:underline">
+                0174 2513750
+              </a>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-4">
+            <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
+              <Mail className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="font-semibold text-sm text-white/80 mb-1">{t('email')}</p>
+              <a href="mailto:info@patel-markt.de" className="font-medium hover:underline">
+                info@patel-markt.de
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

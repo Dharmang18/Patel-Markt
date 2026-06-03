@@ -1,0 +1,175 @@
+{
+  "nav": {
+    "home": "Startseite",
+    "shop": "Shop",
+    "cart": "Warenkorb",
+    "about": "Über uns"
+  },
+  "hero": {
+    "badge": "Frisch eingetroffen",
+    "title": "Authentische Indische Lebensmittel",
+    "subtitle": "Entdecken Sie die reichen Aromen Indiens – direkt geliefert zu Ihnen in Deutschland. Über 500 Produkte von vertrauenswürdigen indischen Marken.",
+    "cta": "Jetzt einkaufen",
+    "secondary": "Mehr erfahren",
+    "stat1Value": "500+",
+    "stat1Label": "Produkte",
+    "stat2Value": "2–4 Tage",
+    "stat2Label": "Lieferzeit",
+    "stat3Value": "Ab €50",
+    "stat3Label": "Gratis Versand"
+  },
+  "categories": {
+    "title": "Kategorien",
+    "subtitle": "Alles, was Sie für die indische Küche brauchen",
+    "spices": "Gewürze & Masalas",
+    "lentils": "Linsen & Hülsenfrüchte",
+    "rice": "Reis & Getreide",
+    "flour": "Mehl & Backen",
+    "snacks": "Snacks & Süßigkeiten",
+    "beverages": "Getränke",
+    "pickles": "Pickles & Chutneys",
+    "oils": "Öle & Ghee",
+    "ready-to-eat": "Fertiggerichte",
+    "namkeen": "Namkeen",
+    "fruits-veggies": "Obst & Gemüse"
+  },
+  "products": {
+    "featured": "Beliebte Produkte",
+    "featuredSub": "Unsere meistverkauften Produkte",
+    "addToCart": "In den Warenkorb",
+    "inStock": "Auf Lager",
+    "outOfStock": "Ausverkauft",
+    "price": "Preis",
+    "shopAll": "Alle Produkte ansehen",
+    "searchPlaceholder": "Produkte suchen…",
+    "productsCount": "{count} Produkte",
+    "noResults": "Keine Produkte gefunden"
+  },
+  "cart": {
+    "title": "Warenkorb",
+    "empty": "Ihr Warenkorb ist leer",
+    "emptyHint": "Stöbern Sie in unserem Shop und fügen Sie Produkte hinzu.",
+    "continueShopping": "Weiter einkaufen",
+    "total": "Gesamt",
+    "subtotal": "Zwischensumme",
+    "shipping": "Versand",
+    "shippingFree": "Kostenlos ab €50",
+    "checkout": "Zur Kasse",
+    "remove": "Entfernen",
+    "quantity": "Menge",
+    "freeShipping": "Noch {amount} bis zum kostenlosen Versand!",
+    "orderSummary": "Bestellübersicht",
+    "orderViaWhatsApp": "Per WhatsApp bestellen",
+    "whatsAppNote": "Tippen Sie auf den Button, um Ihre Bestellung direkt an unser WhatsApp zu senden. Wir bestätigen und organisieren die Lieferung.",
+    "modalTitle": "📦 Bestellung aufgeben",
+    "modalSubtitle": "Wir senden Ihre Bestellung per WhatsApp",
+    "modalFillDetails": "Bitte füllen Sie Ihre Daten aus",
+    "labelName": "Ihr Name",
+    "labelPhone": "Telefonnummer",
+    "labelAddress": "Lieferadresse",
+    "placeholderName": "Vollständiger Name",
+    "placeholderPhone": "+49 170 0000000",
+    "placeholderAddress": "Straße, PLZ, Stadt",
+    "cancel": "Abbrechen",
+    "sendViaWhatsApp": "Per WhatsApp senden",
+    "totalLabel": "Gesamt",
+    "sending": "Wird gesendet…",
+    "orderSuccess": "Bestellung gesendet!",
+    "orderSuccessHint": "Wir haben Ihre Bestellung erhalten und melden uns in Kürze per WhatsApp.",
+    "orderError": "Bestellung konnte nicht gesendet werden. Bitte versuchen Sie es erneut."
+  },
+  "checkout": {
+    "title": "Kasse",
+    "contact": "Kontaktdaten",
+    "name": "Vollständiger Name",
+    "email": "E-Mail-Adresse",
+    "phone": "Telefonnummer",
+    "address": "Lieferadresse",
+    "street": "Straße & Hausnummer",
+    "city": "Stadt",
+    "postcode": "Postleitzahl",
+    "country": "Land",
+    "placeOrder": "Bestellung aufgeben",
+    "orderSummary": "Bestellübersicht",
+    "processing": "Wird verarbeitet...",
+    "success": "Bestellung erfolgreich!",
+    "successMsg": "Vielen Dank für Ihre Bestellung. Sie erhalten in Kürze eine Bestätigungs-E-Mail.",
+    "germany": "Deutschland"
+  },
+  "about": {
+    "title": "Über Patel Markt",
+    "subtitle": "Ihre Heimat für authentische indische Produkte in Deutschland",
+    "story": "Unsere Geschichte",
+    "storyText": "Patel Markt wurde mit einer einfachen Mission gegründet: die reichhaltige Vielfalt indischer Lebensmittel für die indische Gemeinschaft und alle Liebhaber der indischen Küche in Deutschland zugänglich zu machen. Wir beziehen unsere Produkte direkt von vertrauenswürdigen indischen Herstellern und Händlern.",
+    "quality": "Qualität & Frische",
+    "qualityText": "Alle unsere Produkte werden sorgfältig ausgewählt und auf Qualität geprüft. Wir garantieren frische Ware und authentische Produkte aus Indien.",
+    "delivery": "Schnelle Lieferung",
+    "deliveryText": "Wir liefern deutschlandweit. Kostenloser Versand ab einem Bestellwert von €50. Lieferzeit: 2-4 Werktage.",
+    "contact": "Kontakt",
+    "hours": "Öffnungszeiten",
+    "hoursVal": "Mo–Sa: 9:30–20:00 Uhr",
+    "address": "Adresse",
+    "phone": "Telefon",
+    "email": "E-Mail"
+  },
+  "footer": {
+    "tagline": "Authentische indische Lebensmittel in Deutschland",
+    "shop": "Shop",
+    "info": "Informationen",
+    "privacy": "Datenschutz",
+    "imprint": "Impressum",
+    "terms": "AGB",
+    "rights": "Alle Rechte vorbehalten."
+  },
+  "promises": {
+    "delivery": {
+      "title": "Schnelle Lieferung",
+      "desc": "Deutschlandweit in 2–4 Werktagen"
+    },
+    "quality": {
+      "title": "Geprüfte Qualität",
+      "desc": "Alle Produkte sorgfältig ausgewählt"
+    },
+    "returns": {
+      "title": "Einfache Rückgabe",
+      "desc": "14 Tage Rückgaberecht"
+    }
+  },
+  "home": {
+    "shopAll": "Alle ansehen →",
+    "cta": {
+      "title": "Kostenloser Versand ab €50",
+      "subtitle": "Füllen Sie Ihren Warenkorb mit authentischen indischen Produkten und sparen Sie beim Versand.",
+      "button": "Jetzt einkaufen"
+    }
+  },
+  "common": {
+    "loading": "Laden...",
+    "error": "Ein Fehler ist aufgetreten",
+    "currency": "€"
+  },
+  "auth": {
+    "login": "Anmelden",
+    "register": "Registrieren",
+    "logout": "Abmelden",
+    "account": "Mein Konto",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "fullName": "Vollständiger Name",
+    "phone": "Telefon",
+    "address": "Lieferadresse",
+    "haveAccount": "Bereits ein Konto?",
+    "noAccount": "Noch kein Konto?",
+    "createAccount": "Konto erstellen",
+    "signIn": "Anmelden",
+    "myOrders": "Meine Bestellungen",
+    "noOrders": "Noch keine Bestellungen",
+    "profile": "Profil",
+    "saveProfile": "Profil speichern",
+    "saved": "Gespeichert",
+    "checkEmail": "Bitte bestätigen Sie Ihre E-Mail-Adresse, um fortzufahren.",
+    "invalidCredentials": "E-Mail oder Passwort ist falsch.",
+    "genericError": "Etwas ist schiefgelaufen. Bitte erneut versuchen.",
+    "welcome": "Willkommen zurück"
+  }
+}

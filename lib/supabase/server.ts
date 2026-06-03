@@ -1,0 +1,27 @@
+import { cookies } from 'next/headers';
+import { createServerClient } from '@supabase/ssr';
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config';
+
+// Server-side Supabase client (Server Components & Route Handlers). Reads the
+// authenticated user's session from cookies.
+export function createClient() {
+  const cookieStore = cookies();
+
+  return createServerClient(SUPABASE_URL!, SUPABASE_ANON_KEY!, {
+    cookies: {
+      getAll() {
+        return cookieStore.getAll();
+      },
+      setAll(cookiesToSet) {
+        try {
+          cookiesToSet.forEach(({ name, value, options }) =>
+            cookieStore.set(name, value, options)
+          );
+        } catch {
+          // `setAll` called from a Server Component — safe to ignore when
+          // middleware is responsible for refreshing the session.
+        }
+      },
+    },
+  });
+}
