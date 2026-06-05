@@ -61,12 +61,23 @@ export async function getProducts(): Promise<Product[]> {
   if (!isSupabaseConfigured()) return staticProducts;
   try {
     const supabase = createClient();
-    const { data, error } = await supabase
-      .from('products')
-      .select('*')
-      .order('featured', { ascending: false });
-    if (error || !data || data.length === 0) return staticProducts;
-    return (data as ProductRow[]).map(rowToProduct);
+    // Supabase caps a single query at 1000 rows, so page through all products.
+    const PAGE = 1000;
+    const all: ProductRow[] = [];
+    for (let from = 0; ; from += PAGE) {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .order('featured', { ascending: false })
+        .order('name', { ascending: true })
+        .range(from, from + PAGE - 1);
+      if (error) throw error;
+      if (!data || data.length === 0) break;
+      all.push(...(data as ProductRow[]));
+      if (data.length < PAGE) break;
+    }
+    if (all.length === 0) return staticProducts;
+    return all.map(rowToProduct);
   } catch {
     return staticProducts;
   }

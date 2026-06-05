@@ -12,12 +12,21 @@ export async function GET() {
   if (!isAdminAuthenticated()) return unauthorized();
   try {
     const supabase = createAdminClient();
-    const { data, error } = await supabase
-      .from('products')
-      .select('*')
-      .order('category', { ascending: true });
-    if (error) throw error;
-    return NextResponse.json({ products: data ?? [] });
+    const PAGE = 1000;
+    const products: unknown[] = [];
+    for (let from = 0; ; from += PAGE) {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .order('category', { ascending: true })
+        .order('name', { ascending: true })
+        .range(from, from + PAGE - 1);
+      if (error) throw error;
+      if (!data || data.length === 0) break;
+      products.push(...data);
+      if (data.length < PAGE) break;
+    }
+    return NextResponse.json({ products });
   } catch (error) {
     console.error('Admin products GET failed:', error);
     return NextResponse.json({ error: 'Failed to load products' }, { status: 500 });

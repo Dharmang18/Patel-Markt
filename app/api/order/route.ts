@@ -20,7 +20,9 @@ interface OrderPayload {
 
 const FREE_SHIPPING_THRESHOLD = 50;
 const STANDARD_SHIPPING = 4.99;
-const GRAPH_API_VERSION = 'v21.0';
+
+// The Patel Markt WhatsApp that receives orders (015906306724).
+const DEFAULT_MERCHANT_NUMBER = '+4915906306724';
 
 function formatPrice(amount: number) {
   return amount.toFixed(2).replace('.', ',') + ' €';
@@ -49,31 +51,34 @@ function buildMessage(order: OrderPayload, subtotal: number, shipping: number, t
   );
 }
 
+// Sends the order to the merchant's WhatsApp via Twilio. Runs server-side, so
+// the customer never sees it. Returns false (best-effort) if Twilio isn't
+// configured or the send fails.
 async function sendWhatsApp(message: string): Promise<boolean> {
-  const token = process.env.WHATSAPP_TOKEN;
-  const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
-  const merchantNumber = process.env.WHATSAPP_MERCHANT_NUMBER;
-  if (!token || !phoneNumberId || !merchantNumber) return false;
+  const sid = process.env.TWILIO_ACCOUNT_SID;
+  const authToken = process.env.TWILIO_AUTH_TOKEN;
+  const from = process.env.TWILIO_WHATSAPP_FROM; // e.g. "whatsapp:+14155238886"
+  // Receiver = Patel Markt WhatsApp. Accepts a bare number or a whatsapp: value.
+  const toRaw = process.env.TWILIO_WHATSAPP_TO || DEFAULT_MERCHANT_NUMBER;
+  if (!sid || !authToken || !from) return false;
+
+  const to = toRaw.startsWith('whatsapp:') ? toRaw : `whatsapp:${toRaw}`;
+  const fromAddr = from.startsWith('whatsapp:') ? from : `whatsapp:${from}`;
 
   try {
     const res = await fetch(
-      `https://graph.facebook.com/${GRAPH_API_VERSION}/${phoneNumberId}/messages`,
+      `https://api.twilio.com/2010-04-01/Accounts/${sid}/Messages.json`,
       {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          Authorization: 'Basic ' + Buffer.from(`${sid}:${authToken}`).toString('base64'),
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: JSON.stringify({
-          messaging_product: 'whatsapp',
-          to: merchantNumber,
-          type: 'text',
-          text: { preview_url: false, body: message },
-        }),
+        body: new URLSearchParams({ From: fromAddr, To: to, Body: message }),
       }
     );
     if (!res.ok) {
-      console.error('WhatsApp Cloud API error:', res.status, await res.text());
+      console.error('Twilio WhatsApp error:', res.status, await res.text());
       return false;
     }
     return true;

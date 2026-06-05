@@ -39,6 +39,16 @@ export default function RegisterPage() {
         },
       });
       if (error) { setError(error.message); return; }
+
+      // Notify the seller by email (best-effort, fire-and-forget).
+      if (data.user) {
+        fetch('/api/notify-signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: data.user.id }),
+        }).catch(() => {});
+      }
+
       // If email confirmation is required there is no active session yet.
       if (!data.session) { setInfo(t('checkEmail')); return; }
       router.push(`/${locale}/account`);
