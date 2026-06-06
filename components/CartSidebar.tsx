@@ -81,6 +81,7 @@ export default function CartSidebar() {
           phone: form.phone.trim(),
           address: form.address.trim(),
           items: items.map((item) => ({
+            id: item.product.id,
             name: item.product.name,
             unit: item.product.unit,
             quantity: item.quantity,

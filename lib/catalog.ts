@@ -30,7 +30,8 @@ export function rowToProduct(row: ProductRow): Product {
     unit: row.unit,
     category: row.category as Category,
     image: row.image,
-    inStock: row.in_stock,
+    // A product is sold-out when its stock hits zero (or it's flagged off).
+    inStock: row.in_stock && Number(row.stock_qty) > 0,
     featured: row.featured,
     brand: row.brand,
   };

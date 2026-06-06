@@ -29,7 +29,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   return (
     <div className="card overflow-hidden group flex flex-col">
       {/* Product image */}
-      <div className="h-44 bg-gradient-to-br from-red-50 to-amber-100 flex items-center justify-center text-5xl relative overflow-hidden">
+      <div className="h-44 bg-white flex items-center justify-center text-5xl relative overflow-hidden">
         {product.image ? (
           <Image
             src={product.image}

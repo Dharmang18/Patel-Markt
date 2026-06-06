@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 
 interface OrderItem {
+  id?: string;
   name: string;
   unit: string;
   quantity: number;
@@ -109,6 +110,7 @@ export async function POST(req: NextRequest) {
 
   // Sanitise items and recompute totals on the server (authoritative).
   const items = order.items.map((i) => ({
+    id: i.id ? String(i.id) : undefined,
     name: String(i.name),
     unit: String(i.unit),
     quantity: Math.max(1, Math.floor(Number(i.quantity) || 0)),
@@ -144,6 +146,27 @@ export async function POST(req: NextRequest) {
       });
       if (error) throw error;
       persisted = true;
+
+      // Reduce stock for each ordered product (best-effort).
+      for (const it of items) {
+        if (!it.id) continue;
+        try {
+          const { data: prod } = await admin
+            .from('products')
+            .select('stock_qty')
+            .eq('id', it.id)
+            .single();
+          if (prod) {
+            const next = Math.max(0, Number(prod.stock_qty || 0) - it.quantity);
+            await admin
+              .from('products')
+              .update({ stock_qty: next, in_stock: next > 0 })
+              .eq('id', it.id);
+          }
+        } catch (e) {
+          console.error('Stock decrement failed for', it.id, e);
+        }
+      }
     } catch (error) {
       console.error('Order persistence failed:', error);
     }
