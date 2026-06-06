@@ -1547,7 +1547,7 @@ export const categoryEmoji: Record<Category, string> = {
   oils: '🫙',
   'ready-to-eat': '🍱',
   namkeen: '🥨',
-  'fruits-veggies': '🥭',
+  'fruits-veggies': '🍎',
 };
 
 export function getFeaturedProducts(): Product[] {
