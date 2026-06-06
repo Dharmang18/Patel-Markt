@@ -12,6 +12,36 @@ export default function AboutPage() {
         <p className="text-xl text-gray-500 max-w-2xl mx-auto">{t('subtitle')}</p>
       </div>
 
+      {/* Know About Patel Markt */}
+      <div className="mb-16">
+        <h2 className="text-3xl sm:text-4xl font-extrabold mb-6 leading-tight">
+          <span className="text-green-700">Know About</span>{' '}
+          <span className="text-brand">Patel Markt</span>
+        </h2>
+        <div className="space-y-4 text-gray-600 leading-relaxed text-[15px]">
+          <p>
+            Patel Markt was founded at the beginning of 2026 by Khadela and Kakadiya with a vision to
+            bring the taste of home and the richness of global cultures to the local community. Built on
+            the values of quality, trust, and tradition, our store offers a carefully selected range of
+            products from Indian, Asian, African, Latin, and Oriental origins.
+          </p>
+          <p>
+            At Patel Markt, we believe food connects people, memories, and cultures. That is why we are
+            committed to providing authentic groceries, everyday essentials, fresh products, spices,
+            snacks, beverages, and specialty items that make every kitchen feel closer to home.
+          </p>
+          <p>
+            More than just a market, Patel Markt is a welcoming place where diversity is celebrated and
+            customers are treated like family. Whether you are searching for familiar favorites or
+            exploring new flavors, we are here to serve you with warmth, convenience, and care.
+          </p>
+          <p className="font-bold pt-2">
+            <span className="text-brand">Patel Markt</span>{' '}
+            <span className="text-orange-500">– Taste of Tradition.</span>
+          </p>
+        </div>
+      </div>
+
       {/* Story + values */}
       <div className="grid md:grid-cols-3 gap-8 mb-16">
         {[

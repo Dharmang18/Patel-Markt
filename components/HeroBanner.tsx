@@ -4,6 +4,8 @@ import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';
 import { ArrowRight, Star } from 'lucide-react';
 
+const HERO_IMAGE = 'https://syomrupxznaifrrsieaq.supabase.co/storage/v1/object/public/product-images/hero-products.png?v=3';
+
 export default function HeroBanner() {
   const t = useTranslations('hero');
   const locale = useLocale();
@@ -16,6 +18,7 @@ export default function HeroBanner() {
       <div className="absolute top-1/2 right-1/4 w-32 h-32 bg-white/5 rounded-full" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
+        <div className="grid lg:grid-cols-[1fr_1.7fr] gap-6 items-center">
         <div className="max-w-2xl">
           {/* Badge */}
           <div className="inline-flex items-center gap-1.5 bg-white/20 text-white text-sm font-medium px-3 py-1.5 rounded-full mb-6 backdrop-blur-sm border border-white/30">
@@ -63,6 +66,13 @@ export default function HeroBanner() {
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Product collage */}
+        <div className="hidden lg:flex justify-start items-center">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={HERO_IMAGE} alt="Authentic Indian groceries" className="w-full lg:scale-105 origin-left drop-shadow-2xl" />
+        </div>
         </div>
       </div>
     </section>
