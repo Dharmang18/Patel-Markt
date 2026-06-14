@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
+import { useEffect, useState, useCallback, useRef, useMemo, Fragment } from 'react';
 import { useRouter } from 'next/navigation';
-import { Package, ClipboardList, LogOut, Plus, Save, Trash2, Loader2, RefreshCw, Database, Search, Upload, ImageIcon } from 'lucide-react';
+import { Package, ClipboardList, LogOut, Plus, Save, Trash2, Loader2, RefreshCw, Search, Upload, ImageIcon, ChevronLeft, ChevronRight, Pencil, X } from 'lucide-react';
 import { categories as staticCategories } from '@/lib/products';
 import type { ProductRow } from '@/lib/catalog';
 
@@ -52,6 +52,11 @@ export default function AdminDashboard({ supabaseConfigured }: { supabaseConfigu
   const [draft, setDraft] = useState<ProductRow>(emptyProduct);
   const [showAdd, setShowAdd] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+
+  // pagination
+  const PER_PAGE = 200;
+  const [page, setPage] = useState(1);
 
   // filters
   const [pSearch, setPSearch] = useState('');
@@ -87,7 +92,12 @@ export default function AdminDashboard({ supabaseConfigured }: { supabaseConfigu
     if (tab === 'products') loadProducts(); else loadOrders();
   }, [tab, supabaseConfigured, loadProducts, loadOrders]);
 
-  const flash = (m: string) => { setMessage(m); setTimeout(() => setMessage(''), 2500); };
+  const flash = (m: string) => {
+    const isError = /fail|error/i.test(m);
+    setMessage(m);
+    setTimeout(() => setMessage(''), isError ? 6000 : 2500);
+  };
+  const messageIsError = /fail|error/i.test(message);
 
   const uploadImage = async (file: File): Promise<string | null> => {
     const fd = new FormData(); fd.append('file', file);
@@ -96,11 +106,33 @@ export default function AdminDashboard({ supabaseConfigured }: { supabaseConfigu
     const d = await res.json(); return d.url as string;
   };
 
-  const saveProduct = async (row: ProductRow) => {
+  // Send only the columns the `products` table actually has, with numbers
+  // coerced (PostgREST returns numeric/price as strings). Stray fields like
+  // created_at/updated_at from a SELECT * would otherwise make the upsert fail.
+  const toPayload = (row: ProductRow) => ({
+    id: row.id,
+    name: row.name,
+    name_de: row.name_de ?? '',
+    description: row.description ?? '',
+    description_de: row.description_de ?? '',
+    price: Number(row.price) || 0,
+    unit: row.unit ?? '',
+    category: row.category,
+    image: row.image ?? '',
+    in_stock: !!row.in_stock,
+    stock_qty: Number(row.stock_qty) || 0,
+    featured: !!row.featured,
+    brand: row.brand ?? '',
+  });
+
+  const saveProduct = async (row: ProductRow): Promise<boolean> => {
     const res = await fetch('/api/admin/products', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(row),
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(toPayload(row)),
     });
-    if (res.ok) { flash('Saved'); loadProducts(); } else flash('Save failed');
+    if (res.ok) { flash('Saved'); loadProducts(); return true; }
+    const err = await res.json().catch(() => ({}));
+    flash(`Save failed: ${err.error || res.status}`);
+    return false;
   };
 
   const deleteProduct = async (id: string) => {
@@ -113,15 +145,6 @@ export default function AdminDashboard({ supabaseConfigured }: { supabaseConfigu
     if (!draft.id || !draft.name) { flash('id and name are required'); return; }
     await saveProduct(draft);
     setDraft(emptyProduct); setShowAdd(false);
-  };
-
-  const seed = async () => {
-    if (!confirm('Import the built-in catalogue into the database?')) return;
-    setLoading(true);
-    const res = await fetch('/api/admin/seed', { method: 'POST' });
-    setLoading(false);
-    if (res.ok) { const d = await res.json(); flash(`Imported ${d.count} products`); loadProducts(); }
-    else flash('Import failed');
   };
 
   const logout = async () => {
@@ -144,8 +167,12 @@ export default function AdminDashboard({ supabaseConfigured }: { supabaseConfigu
     setUploading(true); const url = await uploadImage(f); setUploading(false);
     if (url) {
       updateLocal(id, { image: url });
-      const row = products.find((p) => p.id === id);
-      if (row) await saveProduct({ ...row, image: url });
+      // When the full editor is open we only stage the new image so other
+      // unsaved field edits aren't discarded by an immediate save+reload.
+      if (editingId !== id) {
+        const row = products.find((p) => p.id === id);
+        if (row) await saveProduct({ ...row, image: url });
+      }
     }
     e.target.value = '';
   };
@@ -164,6 +191,40 @@ export default function AdminDashboard({ supabaseConfigured }: { supabaseConfigu
       (!q || p.name.toLowerCase().includes(q) || (p.brand || '').toLowerCase().includes(q) || p.id.toLowerCase().includes(q))
     );
   }, [products, pSearch, pCat]);
+
+  const pageCount = Math.max(1, Math.ceil(filteredProducts.length / PER_PAGE));
+  const currentPage = Math.min(page, pageCount);
+  const pageStart = (currentPage - 1) * PER_PAGE;
+  const pageEnd = Math.min(pageStart + PER_PAGE, filteredProducts.length);
+  const pageProducts = filteredProducts.slice(pageStart, pageEnd);
+
+  // Reset to the first page whenever the filter/search narrows the list.
+  useEffect(() => { setPage(1); }, [pSearch, pCat]);
+
+  const Pager = () => (
+    <div className="flex items-center justify-between px-1 py-1">
+      <span className="text-xs text-gray-400">
+        {filteredProducts.length === 0 ? '0' : `${pageStart + 1}–${pageEnd}`} of {filteredProducts.length}
+      </span>
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => setPage((p) => Math.max(1, p - 1))}
+          disabled={currentPage <= 1}
+          className="flex items-center gap-1 text-sm font-medium px-2.5 py-1.5 rounded-lg border border-gray-200 bg-white text-gray-600 disabled:opacity-40 disabled:cursor-not-allowed hover:border-gray-300"
+        >
+          <ChevronLeft className="w-4 h-4" /> Prev
+        </button>
+        <span className="text-sm text-gray-500">Page {currentPage} / {pageCount}</span>
+        <button
+          onClick={() => setPage((p) => Math.min(pageCount, p + 1))}
+          disabled={currentPage >= pageCount}
+          className="flex items-center gap-1 text-sm font-medium px-2.5 py-1.5 rounded-lg border border-gray-200 bg-white text-gray-600 disabled:opacity-40 disabled:cursor-not-allowed hover:border-gray-300"
+        >
+          Next <ChevronRight className="w-4 h-4" />
+        </button>
+      </div>
+    </div>
+  );
 
   const filteredOrders = useMemo(() => {
     const n = oName.trim().toLowerCase(), c = oCity.trim().toLowerCase();
@@ -205,7 +266,7 @@ export default function AdminDashboard({ supabaseConfigured }: { supabaseConfigu
           </button>
           <div className="flex-1" />
           {uploading && <span className="text-sm text-gray-500 flex items-center gap-1"><Loader2 className="w-4 h-4 animate-spin" /> uploading…</span>}
-          {message && <span className="text-sm text-green-600 font-medium">{message}</span>}
+          {message && <span className={`text-sm font-medium ${messageIsError ? 'text-red-600' : 'text-green-600'}`}>{message}</span>}
           {loading && <Loader2 className="w-4 h-4 animate-spin text-gray-400" />}
         </div>
 
@@ -217,9 +278,6 @@ export default function AdminDashboard({ supabaseConfigured }: { supabaseConfigu
               </button>
               <button onClick={loadProducts} className="flex items-center gap-1.5 bg-white border border-gray-200 text-gray-600 text-sm font-semibold px-3 py-2 rounded-lg">
                 <RefreshCw className="w-4 h-4" /> Refresh
-              </button>
-              <button onClick={seed} className="flex items-center gap-1.5 bg-white border border-gray-200 text-gray-600 text-sm font-semibold px-3 py-2 rounded-lg">
-                <Database className="w-4 h-4" /> Import catalogue
               </button>
             </div>
 
@@ -289,6 +347,9 @@ export default function AdminDashboard({ supabaseConfigured }: { supabaseConfigu
               </div>
             )}
 
+            {/* top pager */}
+            <Pager />
+
             <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto">
               <table className="w-full text-sm">
                 <thead className="bg-gray-50 text-gray-500 text-xs uppercase">
@@ -303,8 +364,9 @@ export default function AdminDashboard({ supabaseConfigured }: { supabaseConfigu
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredProducts.slice(0, 400).map((p) => (
-                    <tr key={p.id} className="border-t border-gray-100 align-top">
+                  {pageProducts.map((p) => (
+                    <Fragment key={p.id}>
+                    <tr className="border-t border-gray-100 align-top">
                       <td className="px-3 py-2">
                         <button onClick={() => triggerRowUpload(p.id)} title="Replace image" className="block">
                           <Thumb src={p.image} />
@@ -333,20 +395,89 @@ export default function AdminDashboard({ supabaseConfigured }: { supabaseConfigu
                         <input type="checkbox" checked={p.in_stock} onChange={(e) => updateLocal(p.id, { in_stock: e.target.checked })} />
                       </td>
                       <td className="px-3 py-2 text-right whitespace-nowrap">
+                        <button onClick={() => setEditingId(editingId === p.id ? null : p.id)} className={`p-1 ${editingId === p.id ? 'text-orange-600' : 'text-gray-500 hover:text-gray-700'}`} title="Edit details"><Pencil className="w-4 h-4" /></button>
                         <button onClick={() => saveProduct(p)} className="text-green-600 hover:text-green-700 p-1" title="Save"><Save className="w-4 h-4" /></button>
                         <button onClick={() => deleteProduct(p.id)} className="text-red-500 hover:text-red-600 p-1" title="Delete"><Trash2 className="w-4 h-4" /></button>
                       </td>
                     </tr>
+                    {editingId === p.id && (
+                      <tr className="border-t border-gray-100 bg-orange-50/40">
+                        <td colSpan={7} className="px-4 py-4">
+                          <div className="flex items-center justify-between mb-3">
+                            <h4 className="font-semibold text-gray-700 text-sm">Edit details — <span className="text-gray-400">{p.id}</span></h4>
+                            <button onClick={() => setEditingId(null)} className="text-gray-400 hover:text-gray-600" title="Close"><X className="w-4 h-4" /></button>
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <label className="text-xs text-gray-500">Name (EN)
+                              <input value={p.name} onChange={(e) => updateLocal(p.id, { name: e.target.value })}
+                                className="mt-1 w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm text-gray-800" />
+                            </label>
+                            <label className="text-xs text-gray-500">Name (DE)
+                              <input value={p.name_de} onChange={(e) => updateLocal(p.id, { name_de: e.target.value })}
+                                className="mt-1 w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm text-gray-800" />
+                            </label>
+                            <label className="text-xs text-gray-500">Brand
+                              <input value={p.brand} onChange={(e) => updateLocal(p.id, { brand: e.target.value })}
+                                className="mt-1 w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm text-gray-800" />
+                            </label>
+                            <label className="text-xs text-gray-500">Unit (e.g. 500g)
+                              <input value={p.unit} onChange={(e) => updateLocal(p.id, { unit: e.target.value })}
+                                className="mt-1 w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm text-gray-800" />
+                            </label>
+                            <label className="text-xs text-gray-500">Description (EN)
+                              <textarea value={p.description} onChange={(e) => updateLocal(p.id, { description: e.target.value })} rows={3}
+                                className="mt-1 w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm text-gray-800" />
+                            </label>
+                            <label className="text-xs text-gray-500">Description (DE)
+                              <textarea value={p.description_de} onChange={(e) => updateLocal(p.id, { description_de: e.target.value })} rows={3}
+                                className="mt-1 w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm text-gray-800" />
+                            </label>
+                            <label className="text-xs text-gray-500">Price (€)
+                              <input type="number" step="0.01" value={p.price} onChange={(e) => updateLocal(p.id, { price: parseFloat(e.target.value) || 0 })}
+                                className="mt-1 w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm text-gray-800" />
+                            </label>
+                            <label className="text-xs text-gray-500">Stock qty
+                              <input type="number" value={p.stock_qty} onChange={(e) => updateLocal(p.id, { stock_qty: parseInt(e.target.value) || 0 })}
+                                className="mt-1 w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm text-gray-800" />
+                            </label>
+                            <div className="text-xs text-gray-500 md:col-span-2">Image URL
+                              <div className="mt-1 flex items-center gap-3">
+                                <Thumb src={p.image} size={48} />
+                                <button type="button" onClick={() => triggerRowUpload(p.id)}
+                                  className="flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold px-3 py-2 rounded-lg">
+                                  <Upload className="w-4 h-4" /> Upload
+                                </button>
+                                <input value={p.image} onChange={(e) => updateLocal(p.id, { image: e.target.value })} placeholder="…or paste image URL"
+                                  className="flex-1 border border-gray-200 rounded-lg px-2 py-1.5 text-sm text-gray-800" />
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-4 mt-3">
+                            <label className="flex items-center gap-2 text-sm text-gray-600">
+                              <input type="checkbox" checked={p.in_stock} onChange={(e) => updateLocal(p.id, { in_stock: e.target.checked })} /> In stock
+                            </label>
+                            <label className="flex items-center gap-2 text-sm text-gray-600">
+                              <input type="checkbox" checked={p.featured} onChange={(e) => updateLocal(p.id, { featured: e.target.checked })} /> Featured
+                            </label>
+                            <button onClick={async () => { const ok = await saveProduct(p); if (ok) setEditingId(null); }}
+                              className="ml-auto flex items-center gap-1.5 bg-green-500 hover:bg-green-600 text-white text-sm font-semibold px-4 py-2 rounded-lg">
+                              <Save className="w-4 h-4" /> Save changes
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                    </Fragment>
                   ))}
                   {filteredProducts.length === 0 && !loading && (
                     <tr><td colSpan={7} className="px-4 py-8 text-center text-gray-400">No matching products.</td></tr>
                   )}
                 </tbody>
               </table>
-              {filteredProducts.length > 400 && (
-                <div className="px-4 py-2 text-xs text-gray-400 border-t">Showing first 400 of {filteredProducts.length}. Use search/filter to narrow down.</div>
-              )}
             </div>
+
+            {/* bottom pager */}
+            <Pager />
           </div>
         )}
 

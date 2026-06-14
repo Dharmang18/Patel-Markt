@@ -115,7 +115,12 @@
     "hoursVal": "Mon–Sat: 9:30–20:00",
     "address": "Address",
     "phone": "Phone",
-    "email": "Email"
+    "email": "Email",
+    "knowHeading": "<lead>Know About</lead> <brand>Patel Markt</brand>",
+    "know1": "Patel Markt was founded at the beginning of 2026 by Khadela and Kakadiya with a vision to bring the taste of home and the richness of global cultures to the local community. Built on the values of quality, trust, and tradition, our store offers a carefully selected range of products from Indian, Asian, African, Latin, and Oriental origins.",
+    "know2": "At Patel Markt, we believe food connects people, memories, and cultures. That is why we are committed to providing authentic groceries, everyday essentials, fresh products, spices, snacks, beverages, and specialty items that make every kitchen feel closer to home.",
+    "know3": "More than just a market, Patel Markt is a welcoming place where diversity is celebrated and customers are treated like family. Whether you are searching for familiar favorites or exploring new flavors, we are here to serve you with warmth, convenience, and care.",
+    "tagline": "<brand>Patel Markt</brand> <accent>– Taste of Tradition.</accent>"
   },
   "footer": {
     "tagline": "Authentic Indian groceries in Germany",

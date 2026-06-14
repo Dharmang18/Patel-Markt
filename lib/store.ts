@@ -38,10 +38,9 @@ export const useCartStore = create<CartStore>()(
                 ? { ...i, quantity: i.quantity + 1 }
                 : i
             ),
-            isOpen: true,
           });
         } else {
-          set({ items: [...get().items, { product, quantity: 1 }], isOpen: true });
+          set({ items: [...get().items, { product, quantity: 1 }] });
         }
       },
 

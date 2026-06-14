@@ -12,7 +12,7 @@
  *       node scripts/sync-static-to-supabase.ts --apply  (perform the upsert)
  */
 import { readFileSync } from 'node:fs';
-import { products } from '../lib/products.ts';
+import { products } from '../lib/products';
 
 // --- load env from .env.local (no dotenv dependency) ---
 function loadEnv(path: string): Record<string, string> {

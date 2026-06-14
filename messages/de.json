@@ -110,7 +110,12 @@
     "hoursVal": "Mo–Sa: 9:30–20:00 Uhr",
     "address": "Adresse",
     "phone": "Telefon",
-    "email": "E-Mail"
+    "email": "E-Mail",
+    "knowHeading": "<lead>Erfahren Sie mehr über</lead> <brand>Patel Markt</brand>",
+    "know1": "Patel Markt wurde Anfang 2026 von Khadela und Kakadiya gegründet – mit der Vision, den Geschmack der Heimat und den Reichtum globaler Kulturen in die lokale Gemeinschaft zu bringen. Aufgebaut auf den Werten Qualität, Vertrauen und Tradition, bietet unser Geschäft ein sorgfältig ausgewähltes Sortiment an Produkten indischer, asiatischer, afrikanischer, lateinamerikanischer und orientalischer Herkunft.",
+    "know2": "Bei Patel Markt glauben wir, dass Essen Menschen, Erinnerungen und Kulturen verbindet. Deshalb setzen wir uns dafür ein, authentische Lebensmittel, Alltagsprodukte, frische Waren, Gewürze, Snacks, Getränke und Spezialitäten anzubieten, die jede Küche ein Stück heimischer machen.",
+    "know3": "Patel Markt ist mehr als nur ein Markt – ein einladender Ort, an dem Vielfalt gefeiert wird und Kunden wie Familie behandelt werden. Ob Sie nach vertrauten Favoriten suchen oder neue Geschmäcker entdecken möchten: Wir sind mit Herzlichkeit, Komfort und Sorgfalt für Sie da.",
+    "tagline": "<brand>Patel Markt</brand> <accent>– Geschmack der Tradition.</accent>"
   },
   "footer": {
     "tagline": "Authentische indische Lebensmittel in Deutschland",
