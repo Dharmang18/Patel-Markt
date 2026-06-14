@@ -43,7 +43,9 @@
     "shopAll": "सभी उत्पाद देखें",
     "searchPlaceholder": "उत्पाद खोजें…",
     "productsCount": "{count} उत्पाद",
-    "noResults": "कोई उत्पाद नहीं मिला"
+    "noResults": "कोई उत्पाद नहीं मिला",
+    "related": "संबंधित उत्पाद",
+    "relatedSub": "आपको ये भी पसंद आ सकते हैं"
   },
   "cart": {
     "title": "शॉपिंग कार्ट",

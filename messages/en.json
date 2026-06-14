@@ -43,7 +43,9 @@
     "shopAll": "View All Products",
     "searchPlaceholder": "Search products…",
     "productsCount": "{count} products",
-    "noResults": "No products found"
+    "noResults": "No products found",
+    "related": "Related products",
+    "relatedSub": "You might also like"
   },
   "cart": {
     "title": "Shopping Cart",

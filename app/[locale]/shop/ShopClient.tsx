@@ -19,22 +19,52 @@ export default function ShopClient({ initialProducts }: { initialProducts: Produ
   const [query, setQuery] = useState('');
   const products = initialProducts;
 
+  // Localised category label, falling back to the raw value if the category
+  // isn't in the translation file (e.g. a custom category added via admin).
+  const categoryLabel = (cat: string) => {
+    try { return t(cat as Category); } catch { return cat; }
+  };
+
+  const inActiveCategory = (p: Product) => !activeCategory || p.category === activeCategory;
+  const bySort = (a: Product, b: Product) => {
+    if (sortBy === 'price-asc') return a.price - b.price;
+    if (sortBy === 'price-desc') return b.price - a.price;
+    return 0;
+  };
+
+  // Split text into words (Latin + Devanagari aware) for word-prefix matching.
+  const toWords = (s: string) =>
+    s.toLowerCase().split(/[^a-z0-9ऀ-ॿ]+/i).filter(Boolean);
+
   const q = query.trim().toLowerCase();
-  const filtered = products
-    .filter((p) => !activeCategory || p.category === activeCategory)
-    .filter((p) =>
-      !q ||
-      p.name.toLowerCase().includes(q) ||
-      p.nameDE.toLowerCase().includes(q) ||
-      p.brand.toLowerCase().includes(q) ||
-      p.description.toLowerCase().includes(q) ||
-      p.descriptionDE.toLowerCase().includes(q)
-    )
-    .sort((a, b) => {
-      if (sortBy === 'price-asc') return a.price - b.price;
-      if (sortBy === 'price-desc') return b.price - a.price;
-      return 0;
-    });
+  const terms = toWords(q);
+  // A product matches when every search term is the prefix of some word in its
+  // name, brand, category (raw + localised) or description. Prefix-per-word
+  // (not substring) means "atta" hits "Chakki Atta" but not "khatta"/"Navrattan".
+  const matchesQuery = (p: Product) => {
+    if (!terms.length) return true;
+    const words = toWords(
+      `${p.name} ${p.nameDE} ${p.brand} ${p.category} ${categoryLabel(p.category)} ${p.description} ${p.descriptionDE}`
+    );
+    return terms.every((term) => words.some((w) => w.startsWith(term)));
+  };
+
+  const matched = products.filter(inActiveCategory).filter(matchesQuery).sort(bySort);
+
+  // While searching, suggest related products: other items that share a
+  // category or brand with the matches (but aren't matches themselves).
+  const matchedIds = new Set(matched.map((p) => p.id));
+  const relatedCats = new Set(matched.map((p) => p.category));
+  const relatedBrands = new Set(matched.map((p) => p.brand.toLowerCase()).filter(Boolean));
+  const suggestions = q && matched.length
+    ? products
+        .filter(inActiveCategory)
+        .filter((p) => !matchedIds.has(p.id) && (relatedCats.has(p.category) || relatedBrands.has(p.brand.toLowerCase())))
+        .sort(bySort)
+        .slice(0, 8)
+    : [];
+
+  const filtered = matched;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -111,6 +141,19 @@ export default function ShopClient({ initialProducts }: { initialProducts: Produ
           {filtered.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
+        </div>
+      )}
+
+      {/* Related products (only while searching) */}
+      {suggestions.length > 0 && (
+        <div className="mt-14 border-t border-gray-100 pt-10">
+          <h2 className="text-2xl font-extrabold text-gray-900">{tp('related')}</h2>
+          <p className="text-gray-500 mt-1 mb-6">{tp('relatedSub')}</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {suggestions.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
         </div>
       )}
     </div>

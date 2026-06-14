@@ -43,7 +43,9 @@
     "shopAll": "Alle Produkte ansehen",
     "searchPlaceholder": "Produkte suchen…",
     "productsCount": "{count} Produkte",
-    "noResults": "Keine Produkte gefunden"
+    "noResults": "Keine Produkte gefunden",
+    "related": "Ähnliche Produkte",
+    "relatedSub": "Das könnte Ihnen auch gefallen"
   },
   "cart": {
     "title": "Warenkorb",
