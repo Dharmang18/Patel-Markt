@@ -155,6 +155,47 @@ export default function AdminDashboard({ supabaseConfigured }: { supabaseConfigu
   const updateLocal = (id: string, patch: Partial<ProductRow>) =>
     setProducts((ps) => ps.map((p) => (p.id === id ? { ...p, ...patch } : p)));
 
+  // ---- Auto-save -----------------------------------------------------------
+  // Every inline edit is persisted automatically so the seller never has to
+  // hunt for a Save button. We keep a ref to the latest rows (so debounced
+  // timers read fresh data) and one debounce timer per product id.
+  const productsRef = useRef<ProductRow[]>(products);
+  useEffect(() => { productsRef.current = products; }, [products]);
+  const saveTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+
+  // Persist a single product silently — no full-list reload, so a save for one
+  // field doesn't discard another field the seller is still editing.
+  const persist = async (row: ProductRow) => {
+    const res = await fetch('/api/admin/products', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(toPayload(row)),
+    });
+    if (res.ok) { flash('Saved'); return; }
+    const err = await res.json().catch(() => ({}));
+    flash(`Save failed: ${err.error || res.status}`);
+  };
+
+  // Instant save (dropdowns, checkboxes, image uploads). Merge the patch onto
+  // the current row right away so we save the new value without a state race.
+  const commitNow = (id: string, patch: Partial<ProductRow>) => {
+    updateLocal(id, patch);
+    clearTimeout(saveTimers.current[id]);
+    const current = productsRef.current.find((p) => p.id === id);
+    if (current) persist({ ...current, ...patch });
+  };
+
+  // Debounced save for free-text fields so we don't POST on every keystroke.
+  const commitDebounced = (id: string, patch: Partial<ProductRow>) => {
+    updateLocal(id, patch);
+    clearTimeout(saveTimers.current[id]);
+    saveTimers.current[id] = setTimeout(() => {
+      const row = productsRef.current.find((p) => p.id === id);
+      if (row) persist(row);
+    }, 700);
+  };
+
+  // Flush any pending debounced saves when the dashboard unmounts.
+  useEffect(() => () => { Object.values(saveTimers.current).forEach(clearTimeout); }, []);
+
   // file handlers
   const onAddFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0]; if (!f) return;
@@ -165,15 +206,7 @@ export default function AdminDashboard({ supabaseConfigured }: { supabaseConfigu
   const onRowFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0]; const id = rowUploadId.current; if (!f || !id) return;
     setUploading(true); const url = await uploadImage(f); setUploading(false);
-    if (url) {
-      updateLocal(id, { image: url });
-      // When the full editor is open we only stage the new image so other
-      // unsaved field edits aren't discarded by an immediate save+reload.
-      if (editingId !== id) {
-        const row = products.find((p) => p.id === id);
-        if (row) await saveProduct({ ...row, image: url });
-      }
-    }
+    if (url) commitNow(id, { image: url });
     e.target.value = '';
   };
   const triggerRowUpload = (id: string) => { rowUploadId.current = id; rowFileRef.current?.click(); };
@@ -373,30 +406,29 @@ export default function AdminDashboard({ supabaseConfigured }: { supabaseConfigu
                         </button>
                       </td>
                       <td className="px-3 py-2 min-w-[220px]">
-                        <input value={p.name} onChange={(e) => updateLocal(p.id, { name: e.target.value })}
+                        <input value={p.name} onChange={(e) => commitDebounced(p.id, { name: e.target.value })}
                           className="w-full font-medium text-gray-800 border border-transparent hover:border-gray-200 focus:border-gray-300 rounded px-1 py-0.5" />
                         <div className="text-xs text-gray-400 px-1">{p.id} · {p.brand}</div>
                       </td>
                       <td className="px-3 py-2">
-                        <select value={p.category} onChange={(e) => updateLocal(p.id, { category: e.target.value })}
+                        <select value={p.category} onChange={(e) => commitNow(p.id, { category: e.target.value })}
                           className="border border-gray-200 rounded px-1 py-1 text-xs bg-white max-w-[120px]">
                           {catList.map((c) => <option key={c} value={c}>{c}</option>)}
                         </select>
                       </td>
                       <td className="px-3 py-2">
-                        <input type="number" step="0.01" value={p.price} onChange={(e) => updateLocal(p.id, { price: parseFloat(e.target.value) || 0 })}
+                        <input type="number" step="0.01" value={p.price} onChange={(e) => commitDebounced(p.id, { price: parseFloat(e.target.value) || 0 })}
                           className="w-20 border border-gray-200 rounded px-2 py-1" />
                       </td>
                       <td className="px-3 py-2">
-                        <input type="number" value={p.stock_qty} onChange={(e) => updateLocal(p.id, { stock_qty: parseInt(e.target.value) || 0 })}
+                        <input type="number" value={p.stock_qty} onChange={(e) => commitDebounced(p.id, { stock_qty: parseInt(e.target.value) || 0 })}
                           className="w-16 border border-gray-200 rounded px-2 py-1" />
                       </td>
                       <td className="px-3 py-2">
-                        <input type="checkbox" checked={p.in_stock} onChange={(e) => updateLocal(p.id, { in_stock: e.target.checked })} />
+                        <input type="checkbox" checked={p.in_stock} onChange={(e) => commitNow(p.id, { in_stock: e.target.checked })} />
                       </td>
                       <td className="px-3 py-2 text-right whitespace-nowrap">
                         <button onClick={() => setEditingId(editingId === p.id ? null : p.id)} className={`p-1 ${editingId === p.id ? 'text-orange-600' : 'text-gray-500 hover:text-gray-700'}`} title="Edit details"><Pencil className="w-4 h-4" /></button>
-                        <button onClick={() => saveProduct(p)} className="text-green-600 hover:text-green-700 p-1" title="Save"><Save className="w-4 h-4" /></button>
                         <button onClick={() => deleteProduct(p.id)} className="text-red-500 hover:text-red-600 p-1" title="Delete"><Trash2 className="w-4 h-4" /></button>
                       </td>
                     </tr>
@@ -409,35 +441,35 @@ export default function AdminDashboard({ supabaseConfigured }: { supabaseConfigu
                           </div>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <label className="text-xs text-gray-500">Name (EN)
-                              <input value={p.name} onChange={(e) => updateLocal(p.id, { name: e.target.value })}
+                              <input value={p.name} onChange={(e) => commitDebounced(p.id, { name: e.target.value })}
                                 className="mt-1 w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm text-gray-800" />
                             </label>
                             <label className="text-xs text-gray-500">Name (DE)
-                              <input value={p.name_de} onChange={(e) => updateLocal(p.id, { name_de: e.target.value })}
+                              <input value={p.name_de} onChange={(e) => commitDebounced(p.id, { name_de: e.target.value })}
                                 className="mt-1 w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm text-gray-800" />
                             </label>
                             <label className="text-xs text-gray-500">Brand
-                              <input value={p.brand} onChange={(e) => updateLocal(p.id, { brand: e.target.value })}
+                              <input value={p.brand} onChange={(e) => commitDebounced(p.id, { brand: e.target.value })}
                                 className="mt-1 w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm text-gray-800" />
                             </label>
                             <label className="text-xs text-gray-500">Unit (e.g. 500g)
-                              <input value={p.unit} onChange={(e) => updateLocal(p.id, { unit: e.target.value })}
+                              <input value={p.unit} onChange={(e) => commitDebounced(p.id, { unit: e.target.value })}
                                 className="mt-1 w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm text-gray-800" />
                             </label>
                             <label className="text-xs text-gray-500">Description (EN)
-                              <textarea value={p.description} onChange={(e) => updateLocal(p.id, { description: e.target.value })} rows={3}
+                              <textarea value={p.description} onChange={(e) => commitDebounced(p.id, { description: e.target.value })} rows={3}
                                 className="mt-1 w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm text-gray-800" />
                             </label>
                             <label className="text-xs text-gray-500">Description (DE)
-                              <textarea value={p.description_de} onChange={(e) => updateLocal(p.id, { description_de: e.target.value })} rows={3}
+                              <textarea value={p.description_de} onChange={(e) => commitDebounced(p.id, { description_de: e.target.value })} rows={3}
                                 className="mt-1 w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm text-gray-800" />
                             </label>
                             <label className="text-xs text-gray-500">Price (€)
-                              <input type="number" step="0.01" value={p.price} onChange={(e) => updateLocal(p.id, { price: parseFloat(e.target.value) || 0 })}
+                              <input type="number" step="0.01" value={p.price} onChange={(e) => commitDebounced(p.id, { price: parseFloat(e.target.value) || 0 })}
                                 className="mt-1 w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm text-gray-800" />
                             </label>
                             <label className="text-xs text-gray-500">Stock qty
-                              <input type="number" value={p.stock_qty} onChange={(e) => updateLocal(p.id, { stock_qty: parseInt(e.target.value) || 0 })}
+                              <input type="number" value={p.stock_qty} onChange={(e) => commitDebounced(p.id, { stock_qty: parseInt(e.target.value) || 0 })}
                                 className="mt-1 w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm text-gray-800" />
                             </label>
                             <div className="text-xs text-gray-500 md:col-span-2">Image URL
@@ -447,21 +479,22 @@ export default function AdminDashboard({ supabaseConfigured }: { supabaseConfigu
                                   className="flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold px-3 py-2 rounded-lg">
                                   <Upload className="w-4 h-4" /> Upload
                                 </button>
-                                <input value={p.image} onChange={(e) => updateLocal(p.id, { image: e.target.value })} placeholder="…or paste image URL"
+                                <input value={p.image} onChange={(e) => commitDebounced(p.id, { image: e.target.value })} placeholder="…or paste image URL"
                                   className="flex-1 border border-gray-200 rounded-lg px-2 py-1.5 text-sm text-gray-800" />
                               </div>
                             </div>
                           </div>
                           <div className="flex items-center gap-4 mt-3">
                             <label className="flex items-center gap-2 text-sm text-gray-600">
-                              <input type="checkbox" checked={p.in_stock} onChange={(e) => updateLocal(p.id, { in_stock: e.target.checked })} /> In stock
+                              <input type="checkbox" checked={p.in_stock} onChange={(e) => commitNow(p.id, { in_stock: e.target.checked })} /> In stock
                             </label>
                             <label className="flex items-center gap-2 text-sm text-gray-600">
-                              <input type="checkbox" checked={p.featured} onChange={(e) => updateLocal(p.id, { featured: e.target.checked })} /> Featured
+                              <input type="checkbox" checked={p.featured} onChange={(e) => commitNow(p.id, { featured: e.target.checked })} /> Featured
                             </label>
-                            <button onClick={async () => { const ok = await saveProduct(p); if (ok) setEditingId(null); }}
-                              className="ml-auto flex items-center gap-1.5 bg-green-500 hover:bg-green-600 text-white text-sm font-semibold px-4 py-2 rounded-lg">
-                              <Save className="w-4 h-4" /> Save changes
+                            <span className="ml-auto text-xs text-gray-400">Changes save automatically</span>
+                            <button onClick={() => setEditingId(null)}
+                              className="flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold px-4 py-2 rounded-lg">
+                              <X className="w-4 h-4" /> Close
                             </button>
                           </div>
                         </td>
