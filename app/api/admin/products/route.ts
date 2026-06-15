@@ -1,10 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isAdminAuthenticated } from '@/lib/admin-auth';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { SUPABASE_URL } from '@/lib/supabase/config';
 import { ProductRow } from '@/lib/catalog';
+import type { SupabaseClient } from '@supabase/supabase-js';
+
+const BUCKET = 'product-images';
+const PUBLIC_PREFIX = `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/`;
 
 function unauthorized() {
   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+}
+
+// Remove the file backing an admin-uploaded image URL from Storage. No-ops for
+// empty values and for external CDN URLs (which were never in our bucket), so
+// we only ever delete files we own. Best-effort: never throws.
+async function removeUploadedImage(supabase: SupabaseClient, imageUrl?: string | null) {
+  if (!imageUrl || !imageUrl.startsWith(PUBLIC_PREFIX)) return;
+  const key = decodeURIComponent(imageUrl.slice(PUBLIC_PREFIX.length));
+  const { error } = await supabase.storage.from(BUCKET).remove([key]);
+  if (error) console.error('Failed to remove storage image', key, error);
 }
 
 // List all products (admin view).
@@ -47,10 +62,27 @@ export async function POST(req: NextRequest) {
   }
   try {
     const supabase = createAdminClient();
+
+    // If this edit replaces the image, look up the existing one first so we can
+    // clean up the old uploaded file (otherwise image-swaps leak orphans too).
+    let oldImage: string | null = null;
+    if (row.image !== undefined) {
+      const { data: existing } = await supabase
+        .from('products')
+        .select('image')
+        .eq('id', row.id)
+        .maybeSingle();
+      oldImage = existing?.image ?? null;
+    }
+
     const { error } = await supabase
       .from('products')
       .upsert({ ...row, updated_at: new Date().toISOString() }, { onConflict: 'id' });
     if (error) throw error;
+
+    if (oldImage && oldImage !== row.image) {
+      await removeUploadedImage(supabase, oldImage);
+    }
     return NextResponse.json({ ok: true });
   } catch (error) {
     console.error('Admin products POST failed:', error);
@@ -65,8 +97,19 @@ export async function DELETE(req: NextRequest) {
   if (!id) return NextResponse.json({ error: 'id is required' }, { status: 400 });
   try {
     const supabase = createAdminClient();
+
+    // Fetch the row first so we know which image file to remove from Storage,
+    // then delete the row. This way nothing about the product is left behind.
+    const { data: existing } = await supabase
+      .from('products')
+      .select('image')
+      .eq('id', id)
+      .maybeSingle();
+
     const { error } = await supabase.from('products').delete().eq('id', id);
     if (error) throw error;
+
+    await removeUploadedImage(supabase, existing?.image);
     return NextResponse.json({ ok: true });
   } catch (error) {
     console.error('Admin products DELETE failed:', error);

@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "clean:images": "node scripts/clean-orphan-images.ts",
+    "clean:images:apply": "node scripts/clean-orphan-images.ts --apply"
   },
   "dependencies": {
     "@paypal/react-paypal-js": "^8.1.3",
