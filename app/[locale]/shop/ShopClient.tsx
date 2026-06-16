@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ProductCard from '@/components/ProductCard';
 import { categories, Category, categoryEmoji, Product } from '@/lib/products';
 import { SlidersHorizontal, Search } from 'lucide-react';
@@ -14,9 +14,14 @@ export default function ShopClient({ initialProducts }: { initialProducts: Produ
   const tp = useTranslations('products');
   const searchParams = useSearchParams();
   const initialCategory = searchParams.get('category') as Category | null;
+  const qParam = searchParams.get('q') ?? '';
   const [activeCategory, setActiveCategory] = useState<Category | null>(initialCategory);
   const [sortBy, setSortBy] = useState<'default' | 'price-asc' | 'price-desc'>('default');
-  const [query, setQuery] = useState(searchParams.get('q') ?? '');
+  const [query, setQuery] = useState(qParam);
+
+  // Keep the search box in sync when the ?q= param changes via the header
+  // search (Next.js doesn't remount this component on same-route navigation).
+  useEffect(() => { setQuery(qParam); }, [qParam]);
   const products = initialProducts;
 
   // Localised category label, falling back to the raw value if the category
