@@ -4,8 +4,12 @@ import Link from 'next/link';
 import HeroBanner from '@/components/HeroBanner';
 import CategoryGrid from '@/components/CategoryGrid';
 import ProductCard from '@/components/ProductCard';
-import { getFeaturedProducts } from '@/lib/products';
+import { getFeaturedProducts } from '@/lib/catalog';
 import { Truck, ShieldCheck } from 'lucide-react';
+
+// Re-render the home page from the live catalogue so the "popular products"
+// section reflects seller deletes/edits instead of being frozen at build time.
+export const revalidate = 60;
 
 function Promises() {
   const t = useTranslations('promises');
@@ -51,7 +55,7 @@ export default async function HomePage({
   const { locale } = await params;
   const t = await getTranslations('products');
   const tHome = await getTranslations('home');
-  const featured = getFeaturedProducts();
+  const featured = await getFeaturedProducts();
 
   return (
     <>

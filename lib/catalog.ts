@@ -83,3 +83,11 @@ export async function getProducts(): Promise<Product[]> {
     return staticProducts;
   }
 }
+
+// Featured products for the home page "popular products" section, sourced from
+// the live catalogue so seller deletes/edits in the admin panel are reflected
+// (the static `getFeaturedProducts` is only a fallback).
+export async function getFeaturedProducts(): Promise<Product[]> {
+  const all = await getProducts();
+  return all.filter((p) => p.featured);
+}
