@@ -25,7 +25,7 @@ export default function Footer() {
           <div className="md:col-span-2">
             <div className="flex items-center gap-3 mb-4">
               <Image
-                src="/logo-bag.png" alt="Pm" width={44} height={44} className="h-11 w-auto object-contain brightness-0 invert"/>
+                src="/logo-bag-transparent.png" alt="Pm" width={44} height={44} className="h-11 w-auto object-contain"/>
               <div className="flex flex-col leading-tight">
                 <span className="text-xl font-black text-white tracking-wide" style={{ fontFamily: "'Arial Black', Impact, sans-serif" }}>
                   PATEL MARKT
@@ -110,7 +110,7 @@ export default function Footer() {
         <div className="border-t border-gray-800 mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-gray-500">
           <div className="flex items-center gap-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo-bag.png" alt="Patel Markt" className="h-8 w-auto object-contain brightness-0 invert" />
+            <img src="/logo-bag-transparent.png" alt="Patel Markt" className="h-8 w-auto object-contain" />
             <p>© {new Date().getFullYear()} Patel Markt. {t('rights')}</p>
           </div>
           <p>Made with ❤️ for the Indian community in Germany</p>
