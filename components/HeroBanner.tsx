@@ -69,9 +69,9 @@ export default function HeroBanner() {
         </div>
 
         {/* Product collage */}
-        <div className="hidden lg:flex justify-start items-center">
+        <div className="flex justify-center lg:justify-start items-center mt-8 lg:mt-0">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={HERO_IMAGE} alt="Authentic Indian groceries" className="w-full lg:scale-105 origin-left drop-shadow-2xl" />
+          <img src={HERO_IMAGE} alt="Authentic Indian groceries" className="w-full max-w-md lg:max-w-none lg:scale-105 origin-left drop-shadow-2xl" />
         </div>
         </div>
       </div>
