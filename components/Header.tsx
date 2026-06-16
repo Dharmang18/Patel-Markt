@@ -90,27 +90,31 @@ export default function Header() {
           {/* Right actions */}
           <div className="flex items-center gap-3">
             {/* Search (desktop) */}
-            <form onSubmit={submitSearch} className="hidden md:flex items-center">
-              {searchOpen && (
-                <input
-                  ref={searchInputRef}
-                  type="search"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onBlur={() => { if (!searchQuery.trim()) setSearchOpen(false); }}
-                  placeholder={t('search')}
-                  className="w-44 lg:w-56 border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-300 mr-1"
-                />
+            <div className="hidden md:flex items-center">
+              {searchOpen ? (
+                <form onSubmit={submitSearch} className="relative">
+                  <Search className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <input
+                    ref={searchInputRef}
+                    type="search"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onBlur={() => { if (!searchQuery.trim()) setSearchOpen(false); }}
+                    placeholder={t('search')}
+                    className="w-48 lg:w-64 border border-gray-200 rounded-lg pl-10 pr-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-300"
+                  />
+                </form>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setSearchOpen(true)}
+                  className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                  aria-label={t('search')}
+                >
+                  <Search className="w-6 h-6" />
+                </button>
               )}
-              <button
-                type={searchOpen ? 'submit' : 'button'}
-                onClick={() => { if (!searchOpen) setSearchOpen(true); }}
-                className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                aria-label={t('search')}
-              >
-                <Search className="w-6 h-6" />
-              </button>
-            </form>
+            </div>
 
             <div className="hidden md:block">
               <LanguageSwitcher />
