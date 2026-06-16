@@ -16,7 +16,7 @@ export default function ShopClient({ initialProducts }: { initialProducts: Produ
   const initialCategory = searchParams.get('category') as Category | null;
   const [activeCategory, setActiveCategory] = useState<Category | null>(initialCategory);
   const [sortBy, setSortBy] = useState<'default' | 'price-asc' | 'price-desc'>('default');
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState(searchParams.get('q') ?? '');
   const products = initialProducts;
 
   // Localised category label, falling back to the raw value if the category

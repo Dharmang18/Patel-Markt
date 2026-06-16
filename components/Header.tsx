@@ -1,9 +1,10 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
-import { ShoppingCart, Menu, X, User } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { ShoppingCart, Menu, X, User, Search } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
 import { useCartStore } from '@/lib/store';
 import LanguageSwitcher from './LanguageSwitcher';
 import { createClient } from '@/lib/supabase/client';
@@ -13,11 +14,28 @@ export default function Header() {
   const t = useTranslations('nav');
   const ta = useTranslations('auth');
   const locale = useLocale();
+  const router = useRouter();
   const { itemCount, toggleCart } = useCartStore();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [signedIn, setSignedIn] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const searchInputRef = useRef<HTMLInputElement>(null);
   useEffect(() => { setMounted(true); }, []);
+
+  // Focus the input when the search field expands.
+  useEffect(() => {
+    if (searchOpen) searchInputRef.current?.focus();
+  }, [searchOpen]);
+
+  const submitSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const q = searchQuery.trim();
+    router.push(`/${locale}/shop${q ? `?q=${encodeURIComponent(q)}` : ''}`);
+    setSearchOpen(false);
+    setMobileOpen(false);
+  };
 
   useEffect(() => {
     if (!isSupabaseConfigured()) return;
@@ -71,6 +89,29 @@ export default function Header() {
 
           {/* Right actions */}
           <div className="flex items-center gap-3">
+            {/* Search (desktop) */}
+            <form onSubmit={submitSearch} className="hidden md:flex items-center">
+              {searchOpen && (
+                <input
+                  ref={searchInputRef}
+                  type="search"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onBlur={() => { if (!searchQuery.trim()) setSearchOpen(false); }}
+                  placeholder={t('search')}
+                  className="w-44 lg:w-56 border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-300 mr-1"
+                />
+              )}
+              <button
+                type={searchOpen ? 'submit' : 'button'}
+                onClick={() => { if (!searchOpen) setSearchOpen(true); }}
+                className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                aria-label={t('search')}
+              >
+                <Search className="w-6 h-6" />
+              </button>
+            </form>
+
             <div className="hidden md:block">
               <LanguageSwitcher />
             </div>
@@ -121,6 +162,16 @@ export default function Header() {
         {/* Mobile menu */}
         {mobileOpen && (
           <div className="md:hidden pb-4 border-t border-gray-100 mt-2 pt-4 space-y-2">
+            <form onSubmit={submitSearch} className="relative mb-2">
+              <Search className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input
+                type="search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={t('search')}
+                className="w-full border border-gray-200 rounded-lg pl-10 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-300"
+              />
+            </form>
             {links.map((link) => (
               <Link
                 key={link.href}
