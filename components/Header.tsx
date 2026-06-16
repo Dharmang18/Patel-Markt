@@ -139,6 +139,15 @@ export default function Header() {
               )
             )}
 
+            {/* Search button (mobile) — always visible next to the cart */}
+            <button
+              onClick={() => setSearchOpen((v) => !v)}
+              className="md:hidden p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+              aria-label={t('search')}
+            >
+              <Search className="w-6 h-6" />
+            </button>
+
             {/* Cart button */}
             <button
               onClick={toggleCart}
@@ -163,12 +172,13 @@ export default function Header() {
           </div>
         </div>
 
-        {/* Mobile menu */}
-        {mobileOpen && (
-          <div className="md:hidden pb-4 border-t border-gray-100 mt-2 pt-4 space-y-2">
-            <form onSubmit={submitSearch} className="relative mb-2">
+        {/* Mobile search bar — toggled by the search icon, shown on its own row */}
+        {searchOpen && (
+          <div className="md:hidden pb-3">
+            <form onSubmit={submitSearch} className="relative">
               <Search className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
+                autoFocus
                 type="search"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -176,6 +186,12 @@ export default function Header() {
                 className="w-full border border-gray-200 rounded-lg pl-10 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-300"
               />
             </form>
+          </div>
+        )}
+
+        {/* Mobile menu */}
+        {mobileOpen && (
+          <div className="md:hidden pb-4 border-t border-gray-100 mt-2 pt-4 space-y-2">
             {links.map((link) => (
               <Link
                 key={link.href}
