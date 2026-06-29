@@ -3,23 +3,38 @@ import { isAdminAuthenticated } from '@/lib/admin-auth';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { SUPABASE_URL } from '@/lib/supabase/config';
 import { ProductRow } from '@/lib/catalog';
+import { deleteFromR2, r2KeyFromUrl } from '@/lib/storage/r2';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 const BUCKET = 'product-images';
+// Legacy: images uploaded before the move to R2 still live in Supabase Storage.
 const PUBLIC_PREFIX = `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/`;
 
 function unauthorized() {
   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 }
 
-// Remove the file backing an admin-uploaded image URL from Storage. No-ops for
-// empty values and for external CDN URLs (which were never in our bucket), so
-// we only ever delete files we own. Best-effort: never throws.
+// Remove the file backing an admin-uploaded image URL. No-ops for empty values
+// and for external CDN URLs (which were never in our storage), so we only ever
+// delete files we own. Best-effort: never throws.
 async function removeUploadedImage(supabase: SupabaseClient, imageUrl?: string | null) {
-  if (!imageUrl || !imageUrl.startsWith(PUBLIC_PREFIX)) return;
-  const key = decodeURIComponent(imageUrl.slice(PUBLIC_PREFIX.length));
-  const { error } = await supabase.storage.from(BUCKET).remove([key]);
-  if (error) console.error('Failed to remove storage image', key, error);
+  if (!imageUrl) return;
+  // New uploads live in R2.
+  const r2Key = r2KeyFromUrl(imageUrl);
+  if (r2Key) {
+    try {
+      await deleteFromR2(r2Key);
+    } catch (error) {
+      console.error('Failed to remove R2 image', r2Key, error);
+    }
+    return;
+  }
+  // Legacy uploads still in Supabase Storage.
+  if (imageUrl.startsWith(PUBLIC_PREFIX)) {
+    const key = decodeURIComponent(imageUrl.slice(PUBLIC_PREFIX.length));
+    const { error } = await supabase.storage.from(BUCKET).remove([key]);
+    if (error) console.error('Failed to remove storage image', key, error);
+  }
 }
 
 // List all products (admin view).

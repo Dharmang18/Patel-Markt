@@ -4,7 +4,11 @@ import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';
 import { ArrowRight, Star } from 'lucide-react';
 
-const HERO_IMAGE = 'https://syomrupxznaifrrsieaq.supabase.co/storage/v1/object/public/product-images/hero-products.png?v=3';
+// Served from R2 once configured; falls back to the original Supabase URL.
+const R2_BASE = process.env.NEXT_PUBLIC_R2_PUBLIC_URL?.replace(/\/+$/, '');
+const HERO_IMAGE = R2_BASE
+  ? `${R2_BASE}/hero-products.png?v=3`
+  : 'https://syomrupxznaifrrsieaq.supabase.co/storage/v1/object/public/product-images/hero-products.png?v=3';
 
 export default function HeroBanner() {
   const t = useTranslations('hero');
