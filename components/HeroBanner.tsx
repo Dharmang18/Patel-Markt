@@ -78,10 +78,14 @@ export default function HeroBanner() {
 
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-[#5c0f12] via-brand-700 to-saffron-600">
-      {/* Depth: warm blooms plus the existing motif at low opacity. */}
-      <div aria-hidden="true" className="absolute inset-0">
-        <div className="absolute -top-40 -right-20 w-[34rem] h-[34rem] rounded-full bg-saffron-400/25 blur-3xl" />
-        <div className="absolute -bottom-32 -left-24 w-96 h-96 rounded-full bg-brand-400/25 blur-3xl" />
+      {/* Two large hard-edged corner circles — top-right and bottom-left — as on
+          the original hero. Crisp rather than blurred: the visible arc reading
+          across the corner is the whole point. */}
+      <div aria-hidden="true" className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-32 -right-28 w-[30rem] h-[30rem] rounded-full bg-white/[0.07]" />
+        <div className="absolute -bottom-28 -left-32 w-[26rem] h-[26rem] rounded-full bg-white/[0.07]" />
+        {/* Soft warm bloom kept underneath for depth */}
+        <div className="absolute top-1/4 right-1/3 w-96 h-96 rounded-full bg-saffron-400/15 blur-3xl" />
         <div className="absolute inset-0 bg-hero-pattern opacity-30 mix-blend-overlay" />
       </div>
 
