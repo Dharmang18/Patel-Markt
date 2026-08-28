@@ -80,9 +80,9 @@ export default function AccountPage() {
     <div className="max-w-2xl mx-auto px-4 py-12 space-y-8">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-extrabold text-gray-900 flex items-center gap-2">
-          <User className="w-6 h-6 text-red-500" /> {t('account')}
+          <User className="w-6 h-6 text-brand-500" /> {t('account')}
         </h1>
-        <button onClick={logout} className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-red-600">
+        <button onClick={logout} className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-brand-600">
           <LogOut className="w-4 h-4" /> {t('logout')}
         </button>
       </div>
@@ -92,23 +92,23 @@ export default function AccountPage() {
         <h2 className="font-bold text-gray-900">{t('profile')}</h2>
         <p className="text-sm text-gray-400">{email}</p>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">{t('fullName')}</label>
+          <label className="field-label">{t('fullName')}</label>
           <input value={profile.full_name} onChange={(e) => setProfile({ ...profile, full_name: e.target.value })}
-            className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-300" />
+            className="field" />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">{t('phone')}</label>
+          <label className="field-label">{t('phone')}</label>
           <input value={profile.phone} onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
-            className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-300" />
+            className="field" />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">{t('address')}</label>
+          <label className="field-label">{t('address')}</label>
           <textarea rows={2} value={profile.address} onChange={(e) => setProfile({ ...profile, address: e.target.value })}
-            className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-300 resize-none" />
+            className="field resize-none" />
         </div>
         <div className="flex items-center gap-3">
           <button onClick={saveProfile} disabled={saving}
-            className="flex items-center gap-2 bg-red-500 hover:bg-red-600 disabled:bg-gray-300 text-white font-semibold text-sm px-4 py-2.5 rounded-xl">
+            className="btn-primary">
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} {t('saveProfile')}
           </button>
           {saved && <span className="text-sm text-green-600 font-medium">{t('saved')}</span>}
@@ -117,7 +117,7 @@ export default function AccountPage() {
 
       {/* Orders */}
       <section className="space-y-3">
-        <h2 className="font-bold text-gray-900 flex items-center gap-2"><Package className="w-5 h-5 text-red-500" /> {t('myOrders')}</h2>
+        <h2 className="font-bold text-gray-900 flex items-center gap-2"><Package className="w-5 h-5 text-brand-500" /> {t('myOrders')}</h2>
         {orders.length === 0 ? (
           <p className="text-gray-400 text-sm">{t('noOrders')}</p>
         ) : orders.map((o) => (

@@ -56,23 +56,23 @@ export default function CartPage() {
   }, []);
 
   function validateName(val: string) {
-    if (!val.trim()) return 'Name is required';
-    if (val.trim().split(/\s+/).length < 2) return 'Please enter your full name (first and last name)';
-    if (/\d/.test(val)) return 'Name may not contain numbers';
+    if (!val.trim()) return 'errName';
+    if (val.trim().split(/\s+/).length < 2) return 'errNameFull';
+    if (/\d/.test(val)) return 'errNameDigits';
     return '';
   }
 
   function validatePhone(val: string) {
-    if (!val.trim()) return 'Phone number is required';
+    if (!val.trim()) return 'errPhone';
     const cleaned = val.replace(/[\s\-\(\)]/g, '');
-    if (!/^(\+49|0049|0)\d{6,13}$/.test(cleaned)) return 'Enter a valid German number (e.g. 0162 1234567 or +49 162 1234567)';
+    if (!/^(\+49|0049|0)\d{6,13}$/.test(cleaned)) return 'errPhoneInvalid';
     return '';
   }
 
   function validateAddress(val: string) {
-    if (!val.trim()) return 'Address is required';
-    if (!/\d/.test(val)) return 'Include your house number';
-    if (!/\b\d{5}\b/.test(val)) return 'Include your 5-digit postal code';
+    if (!val.trim()) return 'errAddress';
+    if (!/\d/.test(val)) return 'errAddressNumber';
+    if (!/\b\d{5}\b/.test(val)) return 'errAddressZip';
     return '';
   }
 
@@ -143,8 +143,9 @@ export default function CartPage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <h1 className="text-3xl font-extrabold text-gray-900 mb-8">{t('title')}</h1>
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
+      <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-gray-900 mb-2">{t('title')}</h1>
+      <span className="rule mb-8" aria-hidden="true" />
 
       {items.length === 0 ? (
         <div className="text-center py-24">
@@ -156,12 +157,12 @@ export default function CartPage() {
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
           {/* Items list */}
           <div className="lg:col-span-2 space-y-4">
             {items.map((item) => (
-              <div key={item.product.id} className="card p-5 flex gap-5">
-                <div className="w-20 h-20 bg-orange-50 rounded-xl flex-shrink-0 relative overflow-hidden">
+              <div key={item.product.id} className="card p-4 sm:p-5 flex gap-4 sm:gap-5">
+                <div className="w-20 h-20 bg-gray-50 border border-gray-100 rounded-xl flex-shrink-0 relative overflow-hidden">
                   {item.product.image ? (
                     <Image
                       src={item.product.image}
@@ -184,7 +185,7 @@ export default function CartPage() {
                     </div>
                     <button
                       onClick={() => removeItem(item.product.id)}
-                      className="text-gray-300 hover:text-red-500 transition-colors p-1"
+                      className="text-gray-300 hover:text-brand-500 transition-colors p-1 rounded-md"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -214,23 +215,24 @@ export default function CartPage() {
             ))}
           </div>
 
-          {/* Order summary */}
-          <div className="space-y-4">
+          {/* Order summary — sticky on desktop so the total and the order
+              button stay reachable while scrolling a long basket. */}
+          <div className="space-y-4 lg:sticky lg:top-28 lg:self-start">
             {cartTotal < 50 && (
-              <div className="card p-4 bg-orange-50 border border-orange-100">
-                <p className="text-sm text-orange-700 font-medium mb-2">
+              <div className="card p-4 bg-brand-50 border-brand-100">
+                <p className="text-sm text-brand-700 font-medium mb-2">
                   {t('freeShipping', { amount: `€${remaining.toFixed(2)}` })}
                 </p>
-                <div className="h-2 bg-orange-200 rounded-full overflow-hidden">
+                <div className="h-2 bg-brand-200 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-orange-500 rounded-full"
+                    className="h-full bg-brand-500 rounded-full transition-all duration-300"
                     style={{ width: `${Math.min((cartTotal / 50) * 100, 100)}%` }}
                   />
                 </div>
               </div>
             )}
 
-            <div className="card p-6 space-y-4">
+            <div className="card p-6 space-y-4 shadow-lift">
               <h2 className="font-bold text-lg text-gray-900">{t('orderSummary')}</h2>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between text-gray-500">
@@ -241,21 +243,21 @@ export default function CartPage() {
                   <span>{t('shipping')}</span>
                   <span>
                     {shipping === 0 ? (
-                      <span className="text-green-600 font-medium">Kostenlos</span>
+                      <span className="text-green-600 font-semibold">{t('free')}</span>
                     ) : (
                       formatPrice(shipping)
                     )}
                   </span>
                 </div>
               </div>
-              <div className="border-t border-gray-100 pt-4 flex justify-between font-bold text-gray-900 text-lg">
+              <div className="border-t border-gray-200 pt-4 flex justify-between font-bold text-gray-900 text-lg">
                 <span>{t('total')}</span>
                 <span>{formatPrice(grandTotal)}</span>
               </div>
 
               <button
                 onClick={() => setShowModal(true)}
-                className="w-full flex items-center justify-center gap-3 bg-green-500 hover:bg-green-600 text-white font-bold py-3.5 px-6 rounded-xl transition-colors"
+                className="btn-whatsapp btn-lg w-full"
               >
                 <MessageCircle className="w-5 h-5" />
                 {t('orderViaWhatsApp')}
@@ -274,17 +276,17 @@ export default function CartPage() {
 
       {/* Order details modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto animate-pop-in">
             {/* Modal header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
               <div>
                 <h2 className="text-lg font-bold text-gray-900">{t('modalTitle')}</h2>
                 <p className="text-sm text-gray-400 mt-0.5">{t('modalSubtitle')}</p>
               </div>
               <button
                 onClick={closeModal}
-                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                className="btn-icon"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -297,7 +299,7 @@ export default function CartPage() {
                 <p className="text-sm text-gray-500">{t('orderSuccessHint')}</p>
                 <button
                   onClick={closeModal}
-                  className="mt-4 px-6 py-2.5 rounded-xl bg-green-500 hover:bg-green-600 text-white font-semibold text-sm transition-colors"
+                  className="btn-whatsapp mt-4"
                 >
                   {t('continueShopping')}
                 </button>
@@ -307,8 +309,8 @@ export default function CartPage() {
             {/* Form */}
             <div className="px-6 py-5 space-y-4">
               <div>
-                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1.5">
-                  <User className="w-4 h-4 text-green-500" />
+                <label className="field-label">
+                  <User className="w-3.5 h-3.5 text-brand-500" aria-hidden="true" />
                   {t('labelName')} *
                 </label>
                 <input
@@ -317,16 +319,16 @@ export default function CartPage() {
                   onChange={(e) => handleChange('name', e.target.value)}
                   onBlur={() => handleBlur('name')}
                   placeholder={t('placeholderName')}
-                  className={`w-full border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 ${touched.name && errors.name ? 'border-red-400 bg-red-50' : 'border-gray-200'}`}
+                  className={`field ${touched.name && errors.name ? 'field-error' : ''}`}
                 />
                 {touched.name && errors.name && (
-                  <p className="mt-1 text-xs text-red-500">{errors.name}</p>
+                  <p className="mt-1 text-xs text-brand-600">{t(errors.name)}</p>
                 )}
               </div>
 
               <div>
-                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1.5">
-                  <Phone className="w-4 h-4 text-green-500" />
+                <label className="field-label">
+                  <Phone className="w-3.5 h-3.5 text-brand-500" aria-hidden="true" />
                   {t('labelPhone')} *
                 </label>
                 <input
@@ -335,16 +337,16 @@ export default function CartPage() {
                   onChange={(e) => handleChange('phone', e.target.value)}
                   onBlur={() => handleBlur('phone')}
                   placeholder={t('placeholderPhone')}
-                  className={`w-full border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 ${touched.phone && errors.phone ? 'border-red-400 bg-red-50' : 'border-gray-200'}`}
+                  className={`field ${touched.phone && errors.phone ? 'field-error' : ''}`}
                 />
                 {touched.phone && errors.phone && (
-                  <p className="mt-1 text-xs text-red-500">{errors.phone}</p>
+                  <p className="mt-1 text-xs text-brand-600">{t(errors.phone)}</p>
                 )}
               </div>
 
               <div>
-                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1.5">
-                  <MapPin className="w-4 h-4 text-green-500" />
+                <label className="field-label">
+                  <MapPin className="w-3.5 h-3.5 text-brand-500" aria-hidden="true" />
                   {t('labelAddress')} *
                 </label>
                 <textarea
@@ -353,10 +355,10 @@ export default function CartPage() {
                   onBlur={() => handleBlur('address')}
                   placeholder={t('placeholderAddress')}
                   rows={2}
-                  className={`w-full border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 resize-none ${touched.address && errors.address ? 'border-red-400 bg-red-50' : 'border-gray-200'}`}
+                  className={`field resize-none ${touched.address && errors.address ? 'field-error' : ''}`}
                 />
                 {touched.address && errors.address && (
-                  <p className="mt-1 text-xs text-red-500">{errors.address}</p>
+                  <p className="mt-1 text-xs text-brand-600">{t(errors.address)}</p>
                 )}
               </div>
             </div>
@@ -370,7 +372,7 @@ export default function CartPage() {
             </div>
 
             {submitStatus === 'error' && (
-              <p className="mx-6 mb-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-2.5">
+              <p className="mx-6 mb-3 text-sm text-brand-700 bg-brand-50 border border-brand-200 rounded-xl px-4 py-2.5">
                 {t('orderError')}
               </p>
             )}
@@ -380,14 +382,14 @@ export default function CartPage() {
               <button
                 onClick={closeModal}
                 disabled={submitting}
-                className="flex-1 py-3 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 disabled:opacity-50 transition-colors"
+                className="btn flex-1 border border-gray-200 text-gray-600 hover:bg-gray-50"
               >
                 {t('cancel')}
               </button>
               <button
                 onClick={handleSendOrder}
                 disabled={!isValid || submitting}
-                className="flex-1 flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 disabled:bg-gray-200 disabled:text-gray-400 text-white font-bold py-3 rounded-xl transition-colors"
+                className="btn-whatsapp flex-1"
               >
                 {submitting ? (
                   <><Loader2 className="w-4 h-4 animate-spin" />{t('sending')}</>

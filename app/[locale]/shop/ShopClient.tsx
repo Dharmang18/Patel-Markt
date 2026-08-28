@@ -2,10 +2,10 @@
 
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import ProductCard from '@/components/ProductCard';
 import { categories, Category, categoryEmoji, Product } from '@/lib/products';
-import { SlidersHorizontal, Search } from 'lucide-react';
+import { SlidersHorizontal, Search, X } from 'lucide-react';
 
 // Receives the full catalogue already fetched on the server, so the first
 // paint shows every product — no "static list first, then swap" flash.
@@ -22,6 +22,43 @@ export default function ShopClient({ initialProducts }: { initialProducts: Produ
   // Keep the search box in sync when the ?q= param changes via the header
   // search (Next.js doesn't remount this component on same-route navigation).
   useEffect(() => { setQuery(qParam); }, [qParam]);
+
+  // The filter bar is two rows tall on most widths, so it eats the viewport
+  // while browsing. It slides 1:1 with the scroll: scrolling down drags it up
+  // until it tucks behind the header, scrolling up pulls it back out.
+  //
+  // The offset is written straight to the node instead of going through state.
+  // A setState here would re-render this component — and with it every card in
+  // the grid — on every scroll frame, which is what made it lag.
+  const filterBarRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = filterBarRef.current;
+    if (!el) return;
+    let lastY = window.scrollY;
+    let offset = 0;
+    let ticking = false;
+    const apply = () => {
+      const y = Math.max(0, window.scrollY);
+      const delta = y - lastY;
+      lastY = y;
+      // +8px so the bar's bottom border clears the header rather than
+      // leaving a sliver behind it.
+      const max = el.offsetHeight + 8;
+      const next = Math.min(max, Math.max(0, offset + delta));
+      if (next !== offset) {
+        offset = next;
+        el.style.transform = `translateY(-${offset}px)`;
+      }
+      ticking = false;
+    };
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(apply);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
   const products = initialProducts;
 
   // Localised category label, falling back to the raw value if the category
@@ -72,77 +109,101 @@ export default function ShopClient({ initialProducts }: { initialProducts: Produ
   const filtered = matched;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      {/* Page title */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-extrabold text-gray-900">{tp('featured')}</h1>
-        <p className="text-gray-500 mt-1">{tp('productsCount', { count: filtered.length })}</p>
+    <div>
+      {/* Page header band */}
+      <div className="bg-surface-raised border-b border-surface-line">
+        <div className="container-page py-6 sm:py-7">
+          <span className="section-kicker !mb-1.5">{tp('shopAll')}</span>
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-gray-900">
+            {tp('shopTitle')}
+          </h1>
+          <p className="text-gray-500 mt-2 text-base">
+            {tp('productsCount', { count: filtered.length })}
+          </p>
+          <span className="rule !mt-3" aria-hidden="true" />
+        </div>
       </div>
 
+      <div className="container-page py-8">
       {/* Search */}
-      <div className="relative mb-6">
+      <div className="relative mb-4">
         <Search className="w-5 h-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
         <input
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={tp('searchPlaceholder')}
-          className="w-full border border-gray-200 rounded-xl pl-11 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-300"
+          aria-label={tp('searchPlaceholder')}
+          className="field pl-11 pr-11 py-3"
         />
+        {query && (
+          <button
+            type="button"
+            onClick={() => setQuery('')}
+            className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+            aria-label={tp('searchPlaceholder')}
+          >
+            <X className="w-4 h-4" />
+          </button>
+        )}
       </div>
 
-      {/* Filters row */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-8">
-        {/* Category pills */}
-        <div className="flex flex-wrap gap-2 flex-1">
+      {/* Filters row — sticks under the header so the active category stays
+          visible while scrolling a long grid. */}
+      <div
+        ref={filterBarRef}
+        className="sticky top-[7.5rem] z-20 -mx-4 px-4 py-3 mb-8 bg-surface/95 backdrop-blur
+                   border-y border-surface-line flex flex-col lg:flex-row lg:items-center gap-3
+                   will-change-transform"
+      >
+        {/* Category pills — a single horizontal rail on mobile so eleven
+            categories don't push the grid below the fold. */}
+        <div className="flex gap-2 flex-1 overflow-x-auto no-scrollbar lg:flex-wrap lg:overflow-visible -mx-4 px-4 lg:mx-0 lg:px-0 pb-1">
           <button
             onClick={() => setActiveCategory(null)}
-            className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors ${
-              !activeCategory
-                ? 'bg-orange-500 text-white'
-                : 'bg-white text-gray-600 border border-gray-200 hover:border-orange-300'
-            }`}
+            aria-pressed={!activeCategory}
+            className={!activeCategory ? 'pill-active' : 'pill-idle'}
           >
-            Alle
+            {tp('allCategories')}
           </button>
           {categories.map((cat) => (
             <button
               key={cat}
               onClick={() => setActiveCategory(cat === activeCategory ? null : cat)}
-              className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors flex items-center gap-1.5 ${
-                activeCategory === cat
-                  ? 'bg-orange-500 text-white'
-                  : 'bg-white text-gray-600 border border-gray-200 hover:border-orange-300'
-              }`}
+              aria-pressed={activeCategory === cat}
+              className={activeCategory === cat ? 'pill-active' : 'pill-idle'}
             >
-              {categoryEmoji[cat]} {t(cat)}
+              <span aria-hidden="true">{categoryEmoji[cat]}</span> {t(cat)}
             </button>
           ))}
         </div>
 
         {/* Sort */}
         <div className="flex items-center gap-2 flex-shrink-0">
-          <SlidersHorizontal className="w-4 h-4 text-gray-400" />
+          <SlidersHorizontal className="w-4 h-4 text-gray-400" aria-hidden="true" />
+          <label htmlFor="shop-sort" className="sr-only">{tp('sortLabel')}</label>
           <select
+            id="shop-sort"
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-            className="border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-300 bg-white"
+            className="field py-2 w-auto"
           >
-            <option value="default">Standard</option>
-            <option value="price-asc">Preis: aufsteigend</option>
-            <option value="price-desc">Preis: absteigend</option>
+            <option value="default">{tp('sortDefault')}</option>
+            <option value="price-asc">{tp('sortPriceAsc')}</option>
+            <option value="price-desc">{tp('sortPriceDesc')}</option>
           </select>
         </div>
       </div>
 
       {/* Product grid */}
       {filtered.length === 0 ? (
-        <div className="text-center py-20 text-gray-400">
-          <p className="text-5xl mb-4">🔍</p>
-          <p className="font-semibold text-lg">{tp('noResults')}</p>
+        <div className="text-center py-20">
+          <p className="text-5xl mb-4" aria-hidden="true">🔍</p>
+          <p className="font-semibold text-lg text-gray-700">{tp('noResults')}</p>
+          <p className="text-sm text-gray-500 mt-1">{tp('noResultsHint')}</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
           {filtered.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
@@ -151,16 +212,17 @@ export default function ShopClient({ initialProducts }: { initialProducts: Produ
 
       {/* Related products (only while searching) */}
       {suggestions.length > 0 && (
-        <div className="mt-14 border-t border-gray-100 pt-10">
-          <h2 className="text-2xl font-extrabold text-gray-900">{tp('related')}</h2>
-          <p className="text-gray-500 mt-1 mb-6">{tp('relatedSub')}</p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="mt-14 border-t border-gray-200 pt-10">
+          <h2 className="section-title">{tp('related')}</h2>
+          <p className="section-subtitle mb-6">{tp('relatedSub')}</p>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
             {suggestions.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }

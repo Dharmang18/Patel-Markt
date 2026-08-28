@@ -4,7 +4,9 @@
     "shop": "Shop",
     "cart": "Warenkorb",
     "about": "Über uns",
-    "search": "Suchen"
+    "search": "Suchen",
+    "menu": "Menü",
+    "freeShippingNote": "Gratis Lieferung ab 50 € · Deutschlandweit"
   },
   "hero": {
     "badge": "Frisch eingetroffen",
@@ -46,7 +48,15 @@
     "productsCount": "{count} Produkte",
     "noResults": "Keine Produkte gefunden",
     "related": "Ähnliche Produkte",
-    "relatedSub": "Das könnte Ihnen auch gefallen"
+    "relatedSub": "Das könnte Ihnen auch gefallen",
+    "shopTitle": "Alle Produkte",
+    "allCategories": "Alle",
+    "sortLabel": "Sortieren",
+    "sortDefault": "Standard",
+    "sortPriceAsc": "Preis: aufsteigend",
+    "sortPriceDesc": "Preis: absteigend",
+    "noResultsHint": "Versuche einen anderen Suchbegriff oder eine andere Kategorie.",
+    "added": "Hinzugefügt"
   },
   "cart": {
     "title": "Warenkorb",
@@ -79,7 +89,17 @@
     "sending": "Wird gesendet…",
     "orderSuccess": "Bestellung gesendet!",
     "orderSuccessHint": "Wir haben Ihre Bestellung erhalten und melden uns in Kürze per WhatsApp.",
-    "orderError": "Bestellung konnte nicht gesendet werden. Bitte versuchen Sie es erneut."
+    "orderError": "Bestellung konnte nicht gesendet werden. Bitte versuchen Sie es erneut.",
+    "free": "Kostenlos",
+    "close": "Warenkorb schließen",
+    "errName": "Bitte gib deinen Namen ein",
+    "errNameFull": "Bitte Vor- und Nachnamen angeben",
+    "errNameDigits": "Der Name darf keine Zahlen enthalten",
+    "errPhone": "Bitte gib deine Telefonnummer ein",
+    "errPhoneInvalid": "Bitte eine gültige deutsche Nummer angeben (z. B. 0162 1234567)",
+    "errAddress": "Bitte gib deine Adresse ein",
+    "errAddressNumber": "Bitte die Hausnummer angeben",
+    "errAddressZip": "Bitte die 5-stellige Postleitzahl angeben"
   },
   "checkout": {
     "title": "Kasse",
@@ -179,5 +199,9 @@
     "invalidCredentials": "E-Mail oder Passwort ist falsch.",
     "genericError": "Etwas ist schiefgelaufen. Bitte erneut versuchen.",
     "welcome": "Willkommen zurück"
+  },
+  "legal": {
+    "lastUpdated": "Stand",
+    "fallbackNotice": "Diese Seite ist bislang nur auf Deutsch und Englisch verfügbar. Rechtsverbindlich ist die deutsche Fassung."
   }
 }

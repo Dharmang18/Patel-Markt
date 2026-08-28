@@ -4,7 +4,9 @@
     "shop": "Shop",
     "cart": "Cart",
     "about": "About",
-    "search": "Search"
+    "search": "Search",
+    "menu": "Menu",
+    "freeShippingNote": "Free delivery over €50 · Germany-wide"
   },
   "hero": {
     "badge": "Freshly stocked",
@@ -46,7 +48,15 @@
     "productsCount": "{count} products",
     "noResults": "No products found",
     "related": "Related products",
-    "relatedSub": "You might also like"
+    "relatedSub": "You might also like",
+    "shopTitle": "All Products",
+    "allCategories": "All",
+    "sortLabel": "Sort",
+    "sortDefault": "Default",
+    "sortPriceAsc": "Price: low to high",
+    "sortPriceDesc": "Price: high to low",
+    "noResultsHint": "Try a different search term or category.",
+    "added": "Added"
   },
   "cart": {
     "title": "Shopping Cart",
@@ -79,7 +89,17 @@
     "sending": "Sending…",
     "orderSuccess": "Order sent!",
     "orderSuccessHint": "We received your order and will reach out shortly via WhatsApp.",
-    "orderError": "Could not send your order. Please try again."
+    "orderError": "Could not send your order. Please try again.",
+    "free": "Free",
+    "close": "Close cart",
+    "errName": "Name is required",
+    "errNameFull": "Please enter your full name (first and last name)",
+    "errNameDigits": "Name may not contain numbers",
+    "errPhone": "Phone number is required",
+    "errPhoneInvalid": "Enter a valid German number (e.g. 0162 1234567)",
+    "errAddress": "Address is required",
+    "errAddressNumber": "Include your house number",
+    "errAddressZip": "Include your 5-digit postal code"
   },
   "checkout": {
     "title": "Checkout",
@@ -184,5 +204,9 @@
     "invalidCredentials": "Email or password is incorrect.",
     "genericError": "Something went wrong. Please try again.",
     "welcome": "Welcome back"
+  },
+  "legal": {
+    "lastUpdated": "Last updated",
+    "fallbackNotice": "This page is currently available in German and English only. The German version is legally binding."
   }
 }

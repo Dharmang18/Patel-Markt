@@ -23,16 +23,19 @@ export default function LanguageSwitcher() {
 
   return (
     <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
-      <Globe className="w-3.5 h-3.5 text-gray-500 ml-1" />
+      <Globe className="w-3.5 h-3.5 text-gray-500 ml-1" aria-hidden="true" />
       {languages.map((lang) => (
         <button
           key={lang.code}
           onClick={() => switchLocale(lang.code)}
           title={lang.full}
+          lang={lang.code}
+          aria-label={lang.full}
+          aria-current={locale === lang.code ? 'true' : undefined}
           className={`text-xs font-semibold px-2 py-1 rounded-md transition-colors ${
             locale === lang.code
-              ? 'bg-white text-orange-600 shadow-sm'
-              : 'text-gray-500 hover:text-gray-700'
+              ? 'bg-white text-brand-600 shadow-sm'
+              : 'text-gray-500 hover:text-gray-800'
           }`}
         >
           {lang.label}
