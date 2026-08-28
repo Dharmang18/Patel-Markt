@@ -105,33 +105,33 @@ export default function RegisterPage() {
   return (
     <div className="max-w-md mx-auto px-4 py-12">
       <h1 className="text-2xl font-extrabold text-gray-900 mb-6 flex items-center gap-2">
-        <UserPlus className="w-6 h-6 text-red-500" /> {t('createAccount')}
+        <UserPlus className="w-6 h-6 text-brand-500" /> {t('createAccount')}
       </h1>
 
-      {error && <p className="mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{error}</p>}
+      {error && <p className="mb-4 text-sm text-brand-700 bg-brand-50 border border-brand-200 rounded-lg px-3 py-2">{error}</p>}
       {info && <p className="mb-4 text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg px-3 py-2">{info}</p>}
 
       <form onSubmit={submit} className="space-y-4" noValidate>
         {fields.map(({ key, label, type, textarea }) => {
           const showErr = touched[key] && errors[key];
-          const cls = `w-full border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 ${showErr ? 'border-red-400 bg-red-50 focus:ring-red-300' : 'border-gray-200 focus:ring-red-300'}`;
+          const cls = `field ${showErr ? 'field-error' : ''}`;
           return (
             <div key={key}>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+              <label className="field-label">{label}</label>
               {textarea ? (
                 <textarea rows={2} value={form[key]} onChange={(e) => set(key, e.target.value)} onBlur={() => blur(key)}
                   className={cls + ' resize-none'} />
               ) : (
                 <input type={type} value={form[key]} onChange={(e) => set(key, e.target.value)} onBlur={() => blur(key)} className={cls} />
               )}
-              {showErr && <p className="mt-1 text-xs text-red-500">{errors[key]}</p>}
+              {showErr && <p className="mt-1 text-xs text-brand-500">{errors[key]}</p>}
             </div>
           );
         })}
 
         {isValid ? (
           <button type="submit" disabled={loading}
-            className="w-full flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 disabled:bg-gray-300 text-white font-bold py-3 rounded-xl transition-colors">
+            className="btn-primary btn-lg w-full">
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <UserPlus className="w-4 h-4" />}
             {t('createAccount')}
           </button>
@@ -144,7 +144,7 @@ export default function RegisterPage() {
 
       <p className="text-sm text-gray-500 mt-5 text-center">
         {t('haveAccount')}{' '}
-        <Link href={`/${locale}/login`} className="text-red-600 font-semibold hover:underline">{t('signIn')}</Link>
+        <Link href={`/${locale}/login`} className="text-brand-600 font-semibold hover:underline">{t('signIn')}</Link>
       </p>
     </div>
   );

@@ -41,24 +41,24 @@ export default function LoginPage() {
   return (
     <div className="max-w-md mx-auto px-4 py-12">
       <h1 className="text-2xl font-extrabold text-gray-900 mb-6 flex items-center gap-2">
-        <LogIn className="w-6 h-6 text-red-500" /> {t('signIn')}
+        <LogIn className="w-6 h-6 text-brand-500" /> {t('signIn')}
       </h1>
 
-      {error && <p className="mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{error}</p>}
+      {error && <p className="mb-4 text-sm text-brand-700 bg-brand-50 border border-brand-200 rounded-lg px-3 py-2">{error}</p>}
 
       <form onSubmit={submit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">{t('email')}</label>
+          <label className="field-label">{t('email')}</label>
           <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
-            className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-300" />
+            className="field" />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">{t('password')}</label>
+          <label className="field-label">{t('password')}</label>
           <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)}
-            className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-300" />
+            className="field" />
         </div>
         <button type="submit" disabled={loading}
-          className="w-full flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 disabled:bg-gray-300 text-white font-bold py-3 rounded-xl transition-colors">
+          className="btn-primary btn-lg w-full">
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <LogIn className="w-4 h-4" />}
           {t('signIn')}
         </button>
@@ -66,7 +66,7 @@ export default function LoginPage() {
 
       <p className="text-sm text-gray-500 mt-5 text-center">
         {t('noAccount')}{' '}
-        <Link href={`/${locale}/register`} className="text-red-600 font-semibold hover:underline">{t('createAccount')}</Link>
+        <Link href={`/${locale}/register`} className="text-brand-600 font-semibold hover:underline">{t('createAccount')}</Link>
       </p>
     </div>
   );

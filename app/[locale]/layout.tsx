@@ -27,7 +27,7 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale}>
-      <body className="min-h-screen flex flex-col bg-white">
+      <body className="min-h-screen flex flex-col bg-surface">
         <NextIntlClientProvider messages={messages}>
           <Header />
           <CartSidebar />

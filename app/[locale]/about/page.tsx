@@ -27,7 +27,7 @@ export default function AboutPage() {
           <p className="font-bold pt-2">
             {t.rich('tagline', {
               brand: (chunks) => <span className="text-brand">{chunks}</span>,
-              accent: (chunks) => <span className="text-orange-500">{chunks}</span>,
+              accent: (chunks) => <span className="text-saffron-500">{chunks}</span>,
             })}
           </p>
         </div>
@@ -53,7 +53,7 @@ export default function AboutPage() {
           },
         ].map((item) => (
           <div key={item.title} className="card p-6">
-            <div className="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center mb-4">
+            <div className="w-12 h-12 bg-brand-50 rounded-xl flex items-center justify-center mb-4">
               {item.icon}
             </div>
             <h3 className="font-bold text-lg text-gray-900 mb-2">{item.title}</h3>
@@ -63,7 +63,7 @@ export default function AboutPage() {
       </div>
 
       {/* Contact card */}
-      <div className="rounded-3xl p-8 md:p-12 text-white" style={{ background: 'linear-gradient(135deg, #e31e25, #b71c1c)' }}>
+      <div className="rounded-3xl p-8 md:p-12 text-white bg-gradient-to-br from-brand-600 to-brand-800" >
         <h2 className="text-2xl font-extrabold mb-8">{t('contact')}</h2>
 
         <div className="grid sm:grid-cols-2 gap-6">
