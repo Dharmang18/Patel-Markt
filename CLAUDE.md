@@ -78,7 +78,19 @@ Tailwind CSS with a custom palette: `brand` (#e31e25, full 50–900 scale), `saf
 
 Product images live in **Cloudflare R2** and are served from `NEXT_PUBLIC_R2_PUBLIC_URL`; they were migrated off Supabase Storage (`a042f8ec`). Supabase still backs the database and auth — only the images moved. Some local files (`/public/images/products/`) and legacy external CDN URLs (spicevillage.eu, jamoona.com) remain. Remote hostnames are whitelisted in `next.config.mjs`. `images.unoptimized: true` is set — Next.js image optimization is disabled.
 
-The hero shot is `hero-products.png` in the same bucket. It is 1103×568, so capping its rendered width above ~576 CSS px visibly softens it on 2x displays.
+The hero shot is `hero-products.png` in the same bucket. It is 1103×568, so capping its rendered width above ~576 CSS px visibly softens it on 2x displays — this is what "the image looks blurry" means here, and the fix is a smaller cap, not a sharper file.
+
+### Hero Composition
+
+`components/HeroBanner.tsx` is deliberately layered; each piece was asked for and removing one is a regression:
+
+- **Corner circles** — two hard-edged `bg-white/[0.07]` circles bleeding off the top-right and bottom-left. Crisp on purpose; blurring them destroys the arc that reads across the corner.
+- **Product stage** — concentric rings (one solid, one dashed) plus a radial spotlight and a ground-shadow ellipse, so the ragged cutout has a frame and is not floating. The wrapper hugs the image height rather than forcing a square, which otherwise leaves dead space above and below.
+- **`BRAND_MARKS`** — brand names as `white/25` watermarks at `z-20`, ringed *around* the shot. They sit in front of the image on purpose: behind it, the opaque products cut them in half.
+- **`SPARKLES`** — white four-point light-bursts (inline SVG, not lucide icons; an earlier saffron-filled version was rejected).
+- **`CIRCLES`** — small white dots and outline rings at `z-0`, behind the shot.
+
+Layering is `z-0` circles → `z-10` image → `z-20` watermarks and sparkles.
 
 ### Design System
 
